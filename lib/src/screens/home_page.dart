@@ -191,10 +191,13 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                 child: const HeroSection(),
               ),
               const SizedBox(height: 24),
-              // Search Bar
-              SearchBarWidget(
-                onSearchChanged: _handleSearchChange,
-                initialQuery: _searchQuery,
+              // Main Search Bar - Single Point of Search
+              Container(
+                margin: const EdgeInsets.symmetric(vertical: 8),
+                child: SearchBarWidget(
+                  onSearchChanged: _handleSearchChange,
+                  initialQuery: _searchQuery,
+                ),
               ),
               const SizedBox(height: 24),
               CourseCategories(

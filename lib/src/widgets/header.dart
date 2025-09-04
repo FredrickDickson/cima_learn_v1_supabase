@@ -67,11 +67,6 @@ class Header extends StatelessWidget {
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                IconButton(
-                  icon: const Icon(Icons.shopping_cart, size: 24),
-                  onPressed: () {},
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
                 ThemeSwitcherWidget(showLabel: false),
                 PopupMenuButton<String>(
                   onSelected: (String value) {
