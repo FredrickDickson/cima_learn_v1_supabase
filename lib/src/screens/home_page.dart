@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import '../services/enhanced_course_service.dart';
 import '../services/localization_service.dart';
+import '../utils/responsive.dart';
 import '../widgets/header.dart';
 import '../widgets/hero_section.dart';
 import '../widgets/course_categories.dart';
@@ -30,7 +31,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   List<Course> _allCourses = [];
   List<Course> _filteredCourses = [];
 
-  bool get isMobile => MediaQuery.of(context).size.width < 768;
+  bool get isMobile => Responsive.isMobile(context);
 
   void showToast(String message) {
     Fluttertoast.showToast(
@@ -56,7 +57,14 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
 
     _loadCourses();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      showToast('Welcome to CIMA Learn Hub!');
+      Fluttertoast.showToast(
+        msg: 'Welcome to CIMA Learn Hub!',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: const Color(0xFFB71C1C), // CIMA red color
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
     });
   }
 
