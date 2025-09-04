@@ -4,14 +4,12 @@ import '../screens/privacy_policy_page.dart';
 import '../screens/terms_of_service_page.dart';
 import '../screens/profile_page.dart';
 import '../screens/progress_dashboard.dart';
-import 'course_search_delegate.dart';
 import 'theme_switcher_widget.dart';
 
 class Header extends StatelessWidget {
   final bool isMobile;
-  final VoidCallback? onSearchPressed;
 
-  const Header({super.key, required this.isMobile, this.onSearchPressed});
+  const Header({super.key, required this.isMobile});
 
   @override
   Widget build(BuildContext context) {
@@ -69,17 +67,6 @@ class Header extends StatelessWidget {
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                IconButton(
-                  icon: const Icon(Icons.search, size: 24),
-                  onPressed: onSearchPressed ?? () {
-                    // Show search dialog or navigate to search page
-                    showSearch(
-                      context: context,
-                      delegate: CourseSearchDelegate(),
-                    );
-                  },
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
                 IconButton(
                   icon: const Icon(Icons.shopping_cart, size: 24),
                   onPressed: () {},

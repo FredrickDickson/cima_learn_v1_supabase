@@ -142,13 +142,6 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                     },
                   ),
                   ListTile(
-                    leading: const Icon(Icons.search),
-                    title: const Text('Search'),
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                  ),
-                  ListTile(
                     leading: const Icon(Icons.shopping_cart),
                     title: const Text('Cart'),
                     onTap: () {
