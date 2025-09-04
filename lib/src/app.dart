@@ -21,7 +21,7 @@ class CimaLearnApp extends StatelessWidget {
         '/': (context) => const HomePage(),
         '/login': (context) => const LoginPage(),
         '/signup': (context) => const SignupPage(),
-        '/enrolled-courses': (context) => EnrolledCoursesPage(),
+        '/enrolled-courses': (context) => const EnrolledCoursesPage(),
       },
       onUnknownRoute: (settings) => MaterialPageRoute(
         builder: (context) => const NotFoundPage(),

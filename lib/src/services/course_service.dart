@@ -10,11 +10,12 @@ class CourseService {
         .select()
         .order('title', ascending: true);
 
-    final List<Course> courses = response.map((data) {
+    final List<Course> courses = (response as List).map((data) {
       return Course(
         id: data['id'] as String,
         title: data['title'] as String,
         category: data['category'] as String,
+        level: data['level'] as String? ?? 'Beginner',
         instructor: data['instructor'] as String,
         rating: (data['rating'] as num).toDouble(),
         reviewCount: data['review_count'] as int,

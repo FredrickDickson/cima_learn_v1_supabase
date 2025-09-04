@@ -2,10 +2,15 @@ import 'package:flutter/material.dart';
 import '../services/course_service.dart';
 import '../widgets/course_card.dart';
 
-class EnrolledCoursesPage extends StatelessWidget {
-  final CourseService _courseService = CourseService();
+class EnrolledCoursesPage extends StatefulWidget {
+  const EnrolledCoursesPage({super.key});
 
-  EnrolledCoursesPage({super.key});
+  @override
+  State<EnrolledCoursesPage> createState() => _EnrolledCoursesPageState();
+}
+
+class _EnrolledCoursesPageState extends State<EnrolledCoursesPage> {
+  final CourseService _courseService = CourseService();
 
   @override
   Widget build(BuildContext context) {
