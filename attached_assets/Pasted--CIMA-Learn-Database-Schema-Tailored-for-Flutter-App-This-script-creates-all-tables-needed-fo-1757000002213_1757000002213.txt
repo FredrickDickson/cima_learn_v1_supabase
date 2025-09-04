@@ -1,0 +1,818 @@
+-- CIMA Learn Database Schema - Tailored for Flutter App
+-- This script creates all tables needed for the video learning system we built
+
+-- =====================================================================================
+-- STEP 1: BACKUP EXISTING DATA AND UPDATE COURSES TABLE
+-- =====================================================================================
+
+-- Backup existing courses
+CREATE TABLE IF NOT EXISTS courses_backup AS SELECT * FROM courses;
+
+-- Drop existing policies
+DROP POLICY IF EXISTS "Allow public read access to courses" ON courses;
+DROP POLICY IF EXISTS "Users can manage their own profile" ON profiles;
+DROP POLICY IF EXISTS "Users can manage their own enrollments" ON enrollments;
+
+-- Enhanced courses table to match CIMACourse model
+ALTER TABLE courses ADD COLUMN IF NOT EXISTS description TEXT DEFAULT '';
+ALTER TABLE courses ADD COLUMN IF NOT EXISTS skills TEXT[] DEFAULT ARRAY[]::TEXT[];
+ALTER TABLE courses ADD COLUMN IF NOT EXISTS language VARCHAR(10) DEFAULT 'en';
+ALTER TABLE courses ADD COLUMN IF NOT EXISTS video_url TEXT;
+ALTER TABLE courses ADD COLUMN IF NOT EXISTS modules TEXT[] DEFAULT ARRAY[]::TEXT[];
+ALTER TABLE courses ADD COLUMN IF NOT EXISTS level VARCHAR(20) DEFAULT 'member';
+ALTER TABLE courses ADD COLUMN IF NOT EXISTS prerequisites TEXT[] DEFAULT ARRAY[]::TEXT[];
+ALTER TABLE courses ADD COLUMN IF NOT EXISTS session_count INTEGER DEFAULT 4;
+ALTER TABLE courses ADD COLUMN IF NOT EXISTS delivery_mode VARCHAR(20) DEFAULT 'virtual';
+ALTER TABLE courses ADD COLUMN IF NOT EXISTS learning_outcomes TEXT[] DEFAULT ARRAY[]::TEXT[];
+ALTER TABLE courses ADD COLUMN IF NOT EXISTS certification_offered VARCHAR(255) DEFAULT 'Certificate of Completion';
+ALTER TABLE courses ADD COLUMN IF NOT EXISTS is_foundational BOOLEAN DEFAULT FALSE;
+ALTER TABLE courses ADD COLUMN IF NOT EXISTS practical_hours DECIMAL(5,2) DEFAULT 0.00;
+ALTER TABLE courses ADD COLUMN IF NOT EXISTS theory_hours DECIMAL(5,2) DEFAULT 0.00;
+ALTER TABLE courses ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT NOW();
+ALTER TABLE courses ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW();
+
+-- Update data types to match our models
+ALTER TABLE courses ALTER COLUMN duration TYPE INTEGER USING 
+  CASE 
+    WHEN duration ~ '^[0-9]+' THEN REGEXP_REPLACE(duration, '[^0-9]', '', 'g')::INTEGER
+    ELSE 8
+  END;
+
+-- =====================================================================================
+-- STEP 2: COURSE MODULES SYSTEM (matches CourseModule model)
+-- =====================================================================================
+
+CREATE TABLE IF NOT EXISTS course_modules (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    course_id TEXT NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
+    title VARCHAR(255) NOT NULL,
+    description TEXT DEFAULT '',
+    order_index INTEGER NOT NULL,
+    module_type VARCHAR(20) DEFAULT 'video' CHECK (module_type IN ('video', 'document', 'quiz', 'live_session')),
+    content JSONB DEFAULT '{}'::jsonb, -- language code -> content URL mapping
+    estimated_duration_minutes INTEGER DEFAULT 30,
+    prerequisites TEXT[] DEFAULT ARRAY[]::TEXT[],
+    is_required BOOLEAN DEFAULT TRUE,
+    metadata JSONB DEFAULT '{}'::jsonb,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW(),
+    UNIQUE(course_id, order_index)
+);
+
+-- =====================================================================================
+-- STEP 3: MULTI-LANGUAGE CONTENT (matches what EnhancedLocalizationService expects)
+-- =====================================================================================
+
+CREATE TABLE IF NOT EXISTS module_content (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    module_id UUID NOT NULL REFERENCES course_modules(id) ON DELETE CASCADE,
+    language_code VARCHAR(10) NOT NULL, -- 'en', 'fr', 'es', 'pt', 'ar', 'zh', 'de', 'ru', 'ja'
+    content_type VARCHAR(50) NOT NULL, -- 'video_url', 'document_url', 'quiz_data'
+    content_url TEXT,
+    content_data JSONB,
+    subtitle_url TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW(),
+    UNIQUE(module_id, language_code, content_type)
+);
+
+-- =====================================================================================
+-- STEP 4: USER PROGRESS TRACKING (matches ModuleService expectations)
+-- =====================================================================================
+
+CREATE TABLE IF NOT EXISTS user_video_progress (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    module_id UUID NOT NULL REFERENCES course_modules(id) ON DELETE CASCADE,
+    watch_time_seconds INTEGER DEFAULT 0,
+    completion_percentage DECIMAL(5,2) DEFAULT 0.00,
+    is_completed BOOLEAN DEFAULT FALSE,
+    last_position_seconds INTEGER DEFAULT 0,
+    language_watched VARCHAR(10) DEFAULT 'en',
+    completed_at TIMESTAMPTZ,
+    last_watched_at TIMESTAMPTZ DEFAULT NOW(),
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW(),
+    UNIQUE(user_id, module_id)
+);
+
+-- =====================================================================================
+-- STEP 5: USER LANGUAGE PREFERENCES (matches ModuleService)
+-- =====================================================================================
+
+CREATE TABLE IF NOT EXISTS user_language_preferences (
+    user_id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+    preferred_language VARCHAR(10) DEFAULT 'en',
+    subtitle_language VARCHAR(10) DEFAULT 'en',
+    interface_language VARCHAR(10) DEFAULT 'en',
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- =====================================================================================
+-- STEP 6: ENHANCED PROFILES TABLE
+-- =====================================================================================
+
+-- Update profiles table to match our app needs
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS display_name VARCHAR(100);
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS email VARCHAR(255);
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS phone_number VARCHAR(20);
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS country VARCHAR(100);
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS profession VARCHAR(100);
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS organization VARCHAR(255);
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS bio TEXT;
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS profile_image VARCHAR(500);
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS cima_membership_level VARCHAR(20) DEFAULT 'associate';
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW();
+
+-- =====================================================================================
+-- STEP 7: QUIZ SYSTEM (for quiz modules)
+-- =====================================================================================
+
+CREATE TABLE IF NOT EXISTS quiz_attempts (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    module_id UUID NOT NULL REFERENCES course_modules(id) ON DELETE CASCADE,
+    attempt_number INTEGER DEFAULT 1,
+    score DECIMAL(5,2),
+    max_score DECIMAL(5,2),
+    is_passed BOOLEAN DEFAULT FALSE,
+    answers JSONB,
+    time_taken_seconds INTEGER,
+    language_code VARCHAR(10) DEFAULT 'en',
+    started_at TIMESTAMPTZ DEFAULT NOW(),
+    completed_at TIMESTAMPTZ,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- =====================================================================================
+-- STEP 8: LIVE SESSIONS (for live_session modules)
+-- =====================================================================================
+
+CREATE TABLE IF NOT EXISTS live_sessions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    module_id UUID REFERENCES course_modules(id) ON DELETE CASCADE,
+    course_id TEXT NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    instructor_name VARCHAR(255),
+    scheduled_at TIMESTAMPTZ NOT NULL,
+    duration_minutes INTEGER DEFAULT 60,
+    max_participants INTEGER DEFAULT 100,
+    meeting_url TEXT,
+    language_code VARCHAR(10) DEFAULT 'en',
+    is_recorded BOOLEAN DEFAULT TRUE,
+    recording_url TEXT,
+    status VARCHAR(20) DEFAULT 'scheduled' CHECK (status IN ('scheduled', 'live', 'completed', 'cancelled')),
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- =====================================================================================
+-- STEP 9: PERFORMANCE INDEXES
+-- =====================================================================================
+
+-- Course indexes
+CREATE INDEX IF NOT EXISTS idx_courses_category ON courses(category);
+CREATE INDEX IF NOT EXISTS idx_courses_level ON courses(level);
+CREATE INDEX IF NOT EXISTS idx_courses_delivery_mode ON courses(delivery_mode);
+CREATE INDEX IF NOT EXISTS idx_courses_rating ON courses(rating DESC);
+
+-- Module indexes
+CREATE INDEX IF NOT EXISTS idx_course_modules_course_id ON course_modules(course_id);
+CREATE INDEX IF NOT EXISTS idx_course_modules_order ON course_modules(course_id, order_index);
+CREATE INDEX IF NOT EXISTS idx_course_modules_type ON course_modules(module_type);
+
+-- Content indexes
+CREATE INDEX IF NOT EXISTS idx_module_content_module_id ON module_content(module_id);
+CREATE INDEX IF NOT EXISTS idx_module_content_language ON module_content(language_code);
+
+-- Progress indexes
+CREATE INDEX IF NOT EXISTS idx_user_video_progress_user_id ON user_video_progress(user_id);
+CREATE INDEX IF NOT EXISTS idx_user_video_progress_module_id ON user_video_progress(module_id);
+CREATE INDEX IF NOT EXISTS idx_user_video_progress_completion ON user_video_progress(completion_percentage DESC);
+
+-- Quiz indexes
+CREATE INDEX IF NOT EXISTS idx_quiz_attempts_user_module ON quiz_attempts(user_id, module_id);
+
+-- =====================================================================================
+-- STEP 10: ROW LEVEL SECURITY POLICIES
+-- =====================================================================================
+
+-- Enable RLS
+ALTER TABLE courses ENABLE ROW LEVEL SECURITY;
+ALTER TABLE course_modules ENABLE ROW LEVEL SECURITY;
+ALTER TABLE module_content ENABLE ROW LEVEL SECURITY;
+ALTER TABLE user_video_progress ENABLE ROW LEVEL SECURITY;
+ALTER TABLE quiz_attempts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE user_language_preferences ENABLE ROW LEVEL SECURITY;
+ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE enrollments ENABLE ROW LEVEL SECURITY;
+ALTER TABLE live_sessions ENABLE ROW LEVEL SECURITY;
+
+-- Public read policies
+CREATE POLICY "Public can view courses" ON courses
+    FOR SELECT TO public USING (TRUE);
+
+CREATE POLICY "Public can view course modules" ON course_modules
+    FOR SELECT TO public USING (TRUE);
+
+CREATE POLICY "Public can view module content" ON module_content
+    FOR SELECT TO public USING (TRUE);
+
+CREATE POLICY "Public can view live sessions" ON live_sessions
+    FOR SELECT TO public USING (TRUE);
+
+-- User-specific policies
+CREATE POLICY "Users manage own progress" ON user_video_progress
+    FOR ALL TO authenticated USING (auth.uid() = user_id);
+
+CREATE POLICY "Users manage own quiz attempts" ON quiz_attempts
+    FOR ALL TO authenticated USING (auth.uid() = user_id);
+
+CREATE POLICY "Users manage own language preferences" ON user_language_preferences
+    FOR ALL TO authenticated USING (auth.uid() = user_id);
+
+CREATE POLICY "Users manage own profiles" ON profiles
+    FOR ALL TO authenticated USING (auth.uid() = user_id);
+
+CREATE POLICY "Users manage own enrollments" ON enrollments
+    FOR ALL TO authenticated USING (auth.uid() = user_id);
+
+-- =====================================================================================
+-- STEP 11: AUTOMATIC TIMESTAMP TRIGGERS
+-- =====================================================================================
+
+-- Update timestamp function
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ language 'plpgsql';
+
+-- Add triggers
+CREATE TRIGGER update_courses_updated_at 
+    BEFORE UPDATE ON courses 
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_course_modules_updated_at 
+    BEFORE UPDATE ON course_modules 
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_module_content_updated_at 
+    BEFORE UPDATE ON module_content 
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_user_video_progress_updated_at 
+    BEFORE UPDATE ON user_video_progress 
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_profiles_updated_at 
+    BEFORE UPDATE ON profiles 
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- =====================================================================================
+-- STEP 12: MIGRATE EXISTING COURSE DATA
+-- =====================================================================================
+
+-- Update existing courses with enhanced fields
+UPDATE courses SET 
+    description = COALESCE(description, 'Professional training in ' || category || ' by expert ' || instructor),
+    level = CASE 
+        WHEN category = 'arbitration' THEN 'fellow'
+        WHEN category = 'mediation' THEN 'member'  
+        ELSE 'associate'
+    END,
+    delivery_mode = 'virtual',
+    session_count = 4,
+    learning_outcomes = ARRAY[
+        'Master fundamental principles and concepts',
+        'Apply knowledge to real-world scenarios', 
+        'Understand current best practices',
+        'Develop practical professional skills'
+    ],
+    practical_hours = duration * 0.6,
+    theory_hours = duration * 0.4,
+    updated_at = NOW()
+WHERE description IS NULL OR description = '';
+
+-- =====================================================================================
+-- STEP 13: CREATE SAMPLE MODULES FOR EXISTING COURSES
+-- =====================================================================================
+
+-- Insert sample modules for each existing course
+INSERT INTO course_modules (course_id, title, description, order_index, module_type, estimated_duration_minutes, content)
+SELECT 
+    c.id,
+    'Module 1: Introduction to ' || c.title,
+    'Foundational concepts and overview',
+    1,
+    'video',
+    45,
+    ('{"en": "https://example.com/videos/' || c.id || '-intro-en.mp4"}')::jsonb
+FROM courses c
+WHERE NOT EXISTS (
+    SELECT 1 FROM course_modules cm WHERE cm.course_id = c.id AND cm.order_index = 1
+);
+
+INSERT INTO course_modules (course_id, title, description, order_index, module_type, estimated_duration_minutes, content)
+SELECT 
+    c.id,
+    'Module 2: Advanced ' || c.category,
+    'Deep dive into advanced concepts',
+    2,
+    'video', 
+    60,
+    ('{"en": "https://example.com/videos/' || c.id || '-advanced-en.mp4"}')::jsonb
+FROM courses c
+WHERE NOT EXISTS (
+    SELECT 1 FROM course_modules cm WHERE cm.course_id = c.id AND cm.order_index = 2
+);
+
+INSERT INTO course_modules (course_id, title, description, order_index, module_type, estimated_duration_minutes)
+SELECT 
+    c.id,
+    'Module 3: Case Studies',
+    'Real-world applications and examples',
+    3,
+    'document',
+    30
+FROM courses c
+WHERE NOT EXISTS (
+    SELECT 1 FROM course_modules cm WHERE cm.course_id = c.id AND cm.order_index = 3
+);
+
+INSERT INTO course_modules (course_id, title, description, order_index, module_type, estimated_duration_minutes)
+SELECT 
+    c.id,
+    'Module 4: Assessment',
+    'Test your knowledge and skills',
+    4,
+    'quiz',
+    20
+FROM courses c
+WHERE NOT EXISTS (
+    SELECT 1 FROM course_modules cm WHERE cm.course_id = c.id AND cm.order_index = 4
+);
+
+-- =====================================================================================
+-- STEP 14: ADD MULTI-LANGUAGE CONTENT FOR VIDEO MODULES
+-- =====================================================================================
+
+-- Add English content for video modules
+INSERT INTO module_content (module_id, language_code, content_type, content_url)
+SELECT 
+    cm.id,
+    'en',
+    'video_url',
+    'https://example.com/videos/' || cm.course_id || '-' || cm.order_index || '-en.mp4'
+FROM course_modules cm 
+WHERE cm.module_type = 'video'
+AND NOT EXISTS (
+    SELECT 1 FROM module_content mc 
+    WHERE mc.module_id = cm.id AND mc.language_code = 'en'
+);
+
+-- Add French content for video modules
+INSERT INTO module_content (module_id, language_code, content_type, content_url)
+SELECT 
+    cm.id,
+    'fr',
+    'video_url',
+    'https://example.com/videos/' || cm.course_id || '-' || cm.order_index || '-fr.mp4'
+FROM course_modules cm 
+WHERE cm.module_type = 'video'
+AND NOT EXISTS (
+    SELECT 1 FROM module_content mc 
+    WHERE mc.module_id = cm.id AND mc.language_code = 'fr'
+);
+
+-- Add Spanish content for video modules  
+INSERT INTO module_content (module_id, language_code, content_type, content_url)
+SELECT 
+    cm.id,
+    'es',
+    'video_url',
+    'https://example.com/videos/' || cm.course_id || '-' || cm.order_index || '-es.mp4'
+FROM course_modules cm 
+WHERE cm.module_type = 'video'
+AND NOT EXISTS (
+    SELECT 1 FROM module_content mc 
+    WHERE mc.module_id = cm.id AND mc.language_code = 'es'
+);
+
+-- =====================================================================================
+-- STEP 15: CLEANUP AND SUCCESS MESSAGE
+-- =====================================================================================
+
+-- Clean up backup table (uncomment when ready)
+-- DROP TABLE IF EXISTS courses_backup;
+
+-- Verification query
+SELECT 
+    'CIMA Learn database migration completed successfully!' as status,
+    COUNT(*) as total_courses,
+    SUM(CASE WHEN level = 'associate' THEN 1 ELSE 0 END) as associate_courses,
+    SUM(CASE WHEN level = 'member' THEN 1 ELSE 0 END) as member_courses,
+    SUM(CASE WHEN level = 'fellow' THEN 1 ELSE 0 END) as fellow_courses
+FROM courses;
+
+SELECT 
+    'Module system ready!' as module_status,
+    COUNT(*) as total_modules,
+    SUM(CASE WHEN module_type = 'video' THEN 1 ELSE 0 END) as video_modules,
+    SUM(CASE WHEN module_type = 'document' THEN 1 ELSE 0 END) as document_modules,
+    SUM(CASE WHEN module_type = 'quiz' THEN 1 ELSE 0 END) as quiz_modules
+FROM course_modules;
+
+SELECT 
+    'Multi-language content ready!' as content_status,
+    COUNT(*) as total_content_items,
+    COUNT(DISTINCT language_code) as supported_languages
+FROM module_content;
+
+-- Quiz and Certificate System Tables for CIMA Learn
+-- Add these tables to your existing Supabase database
+
+-- =============================================================================
+-- QUIZZES TABLE - Store quiz definitions
+-- =============================================================================
+
+CREATE TABLE IF NOT EXISTS quizzes (
+    id TEXT PRIMARY KEY,
+    course_id TEXT NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    questions JSONB NOT NULL DEFAULT '[]', -- Store questions as JSON
+    time_limit INTEGER DEFAULT 30, -- in minutes
+    passing_score INTEGER DEFAULT 70, -- percentage
+    is_required BOOLEAN DEFAULT FALSE,
+    max_attempts INTEGER DEFAULT 3,
+    available_from TIMESTAMPTZ,
+    available_until TIMESTAMPTZ,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW(),
+    created_by UUID REFERENCES auth.users(id)
+);
+
+-- =============================================================================
+-- QUIZ ATTEMPTS TABLE - Track user quiz attempts
+-- =============================================================================
+
+CREATE TABLE IF NOT EXISTS quiz_attempts (
+    id TEXT PRIMARY KEY,
+    quiz_id TEXT NOT NULL REFERENCES quizzes(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    attempt_number INTEGER NOT NULL DEFAULT 1,
+    answers JSONB DEFAULT '{}', -- Store user answers as JSON
+    score INTEGER DEFAULT 0,
+    total_points INTEGER DEFAULT 0,
+    percentage DECIMAL(5,2) DEFAULT 0.00,
+    is_passed BOOLEAN DEFAULT FALSE,
+    started_at TIMESTAMPTZ NOT NULL,
+    completed_at TIMESTAMPTZ,
+    time_taken INTEGER, -- in seconds
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW(),
+    
+    -- Constraints
+    UNIQUE(quiz_id, user_id, attempt_number),
+    CHECK (percentage >= 0 AND percentage <= 100),
+    CHECK (score >= 0),
+    CHECK (total_points >= 0)
+);
+
+-- =============================================================================
+-- CERTIFICATES TABLE - Store issued certificates
+-- =============================================================================
+
+CREATE TABLE IF NOT EXISTS certificates (
+    id TEXT PRIMARY KEY,
+    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    course_id TEXT NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
+    certificate_type VARCHAR(50) DEFAULT 'course_completion',
+    certificate_number VARCHAR(100) UNIQUE NOT NULL,
+    recipient_name VARCHAR(255) NOT NULL,
+    course_title VARCHAR(255) NOT NULL,
+    instructor_name VARCHAR(255),
+    completion_date TIMESTAMPTZ NOT NULL,
+    final_score DECIMAL(5,2),
+    verification_code VARCHAR(100) UNIQUE NOT NULL,
+    template_used VARCHAR(50) DEFAULT 'cima_standard',
+    pdf_url TEXT,
+    is_verified BOOLEAN DEFAULT TRUE,
+    issued_at TIMESTAMPTZ DEFAULT NOW(),
+    valid_until TIMESTAMPTZ,
+    revoked_at TIMESTAMPTZ,
+    revocation_reason TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW(),
+    
+    -- Constraints
+    UNIQUE(user_id, course_id, certificate_type)
+);
+
+-- =============================================================================
+-- COURSE MODULES ENHANCEMENT - Add quiz support
+-- =============================================================================
+
+-- Add quiz_id to course modules to link modules with quizzes
+ALTER TABLE course_modules ADD COLUMN IF NOT EXISTS quiz_id TEXT REFERENCES quizzes(id) ON DELETE SET NULL;
+ALTER TABLE course_modules ADD COLUMN IF NOT EXISTS is_quiz_required BOOLEAN DEFAULT FALSE;
+ALTER TABLE course_modules ADD COLUMN IF NOT EXISTS completion_criteria JSONB DEFAULT '{}';
+
+-- =============================================================================
+-- USER PROGRESS ENHANCEMENT - Track detailed progress
+-- =============================================================================
+
+CREATE TABLE IF NOT EXISTS user_progress (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    course_id TEXT NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
+    module_id TEXT REFERENCES course_modules(id) ON DELETE CASCADE,
+    lesson_id TEXT,
+    progress_type VARCHAR(50) NOT NULL, -- 'lesson', 'quiz', 'assignment', 'video'
+    status VARCHAR(20) DEFAULT 'not_started', -- 'not_started', 'in_progress', 'completed', 'failed'
+    progress_percentage DECIMAL(5,2) DEFAULT 0.00,
+    time_spent INTEGER DEFAULT 0, -- in seconds
+    last_accessed TIMESTAMPTZ DEFAULT NOW(),
+    completed_at TIMESTAMPTZ,
+    data JSONB DEFAULT '{}', -- Store additional progress data
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW(),
+    
+    -- Constraints
+    UNIQUE(user_id, course_id, module_id, lesson_id, progress_type),
+    CHECK (progress_percentage >= 0 AND progress_percentage <= 100)
+);
+
+-- =============================================================================
+-- ROW LEVEL SECURITY POLICIES
+-- =============================================================================
+
+-- Enable RLS on new tables
+ALTER TABLE quizzes ENABLE ROW LEVEL SECURITY;
+ALTER TABLE quiz_attempts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE certificates ENABLE ROW LEVEL SECURITY;
+ALTER TABLE user_progress ENABLE ROW LEVEL SECURITY;
+
+-- Quizzes: Public read access, instructors can manage
+CREATE POLICY "Public can view quizzes" ON quizzes
+    FOR SELECT TO authenticated, anon USING (TRUE);
+
+CREATE POLICY "Instructors can manage quizzes" ON quizzes
+    FOR ALL TO authenticated USING (auth.uid() = created_by);
+
+-- Quiz attempts: Users can only access their own attempts
+CREATE POLICY "Users can view own quiz attempts" ON quiz_attempts
+    FOR SELECT TO authenticated USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can create own quiz attempts" ON quiz_attempts
+    FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update own quiz attempts" ON quiz_attempts
+    FOR UPDATE TO authenticated USING (auth.uid() = user_id);
+
+-- Certificates: Users can view their own, public verification
+CREATE POLICY "Users can view own certificates" ON certificates
+    FOR SELECT TO authenticated USING (auth.uid() = user_id);
+
+CREATE POLICY "Public can verify certificates" ON certificates
+    FOR SELECT TO anon, authenticated USING (is_verified = TRUE);
+
+CREATE POLICY "System can issue certificates" ON certificates
+    FOR INSERT TO service_role WITH CHECK (TRUE);
+
+CREATE POLICY "System can update certificates" ON certificates
+    FOR UPDATE TO service_role USING (TRUE);
+
+-- User progress: Users can only access their own progress
+CREATE POLICY "Users can view own progress" ON user_progress
+    FOR SELECT TO authenticated USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can manage own progress" ON user_progress
+    FOR ALL TO authenticated USING (auth.uid() = user_id);
+
+-- =============================================================================
+-- TRIGGERS FOR AUTOMATIC UPDATES
+-- =============================================================================
+
+-- Update timestamps
+CREATE TRIGGER update_quizzes_updated_at 
+    BEFORE UPDATE ON quizzes 
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_quiz_attempts_updated_at 
+    BEFORE UPDATE ON quiz_attempts 
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_certificates_updated_at 
+    BEFORE UPDATE ON certificates 
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_user_progress_updated_at 
+    BEFORE UPDATE ON user_progress 
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- =============================================================================
+-- CREATE INDEXES SEPARATELY (PostgreSQL syntax)
+-- =============================================================================
+
+-- Indexes for quizzes table
+CREATE INDEX IF NOT EXISTS idx_quizzes_course_id ON quizzes(course_id);
+CREATE INDEX IF NOT EXISTS idx_quizzes_available ON quizzes(available_from, available_until);
+CREATE INDEX IF NOT EXISTS idx_quizzes_created_at ON quizzes(created_at DESC);
+
+-- Indexes for quiz_attempts table
+CREATE INDEX IF NOT EXISTS idx_quiz_attempts_quiz_id ON quiz_attempts(quiz_id);
+CREATE INDEX IF NOT EXISTS idx_quiz_attempts_user_id ON quiz_attempts(user_id);
+CREATE INDEX IF NOT EXISTS idx_quiz_attempts_completed ON quiz_attempts(completed_at);
+CREATE INDEX IF NOT EXISTS idx_quiz_attempts_percentage ON quiz_attempts(percentage DESC);
+
+-- Indexes for certificates table
+CREATE INDEX IF NOT EXISTS idx_certificates_user_id ON certificates(user_id);
+CREATE INDEX IF NOT EXISTS idx_certificates_course_id ON certificates(course_id);
+CREATE INDEX IF NOT EXISTS idx_certificates_verification_code ON certificates(verification_code);
+CREATE INDEX IF NOT EXISTS idx_certificates_certificate_number ON certificates(certificate_number);
+CREATE INDEX IF NOT EXISTS idx_certificates_issued_at ON certificates(issued_at DESC);
+CREATE INDEX IF NOT EXISTS idx_certificates_valid_until ON certificates(valid_until);
+
+-- Indexes for user_progress table
+CREATE INDEX IF NOT EXISTS idx_user_progress_user_course ON user_progress(user_id, course_id);
+CREATE INDEX IF NOT EXISTS idx_user_progress_module ON user_progress(module_id);
+CREATE INDEX IF NOT EXISTS idx_user_progress_status ON user_progress(status);
+CREATE INDEX IF NOT EXISTS idx_user_progress_last_accessed ON user_progress(last_accessed DESC);
+
+-- =============================================================================
+-- USEFUL FUNCTIONS
+-- =============================================================================
+
+-- Calculate course completion percentage
+CREATE OR REPLACE FUNCTION calculate_course_completion(user_uuid UUID, course_uuid TEXT)
+RETURNS DECIMAL(5,2)
+LANGUAGE sql SECURITY DEFINER
+AS $$
+    WITH progress_summary AS (
+        SELECT 
+            COUNT(CASE WHEN status = 'completed' THEN 1 END) as completed,
+            COUNT(*) as total
+        FROM user_progress 
+        WHERE user_id = user_uuid 
+        AND course_id = course_uuid
+        AND progress_type IN ('lesson', 'quiz')
+    )
+    SELECT 
+        CASE 
+            WHEN total = 0 THEN 0.00
+            ELSE ROUND((completed::DECIMAL / total::DECIMAL) * 100, 2)
+        END
+    FROM progress_summary;
+$$;
+
+-- Check if user meets certificate requirements
+CREATE OR REPLACE FUNCTION meets_certificate_requirements(user_uuid UUID, course_uuid TEXT)
+RETURNS BOOLEAN
+LANGUAGE sql SECURITY DEFINER
+AS $$
+    SELECT 
+        -- Course must be 100% complete
+        calculate_course_completion(user_uuid, course_uuid) >= 100.00
+        AND
+        -- All required quizzes must be passed
+        NOT EXISTS (
+            SELECT 1 FROM quizzes q
+            WHERE q.course_id = course_uuid
+            AND q.is_required = TRUE
+            AND NOT EXISTS (
+                SELECT 1 FROM quiz_attempts qa
+                WHERE qa.quiz_id = q.id
+                AND qa.user_id = user_uuid
+                AND qa.is_passed = TRUE
+            )
+        );
+$$;
+
+-- =============================================================================
+-- SAMPLE DATA FUNCTIONS
+-- =============================================================================
+
+-- Function to create sample quiz for a course
+CREATE OR REPLACE FUNCTION create_sample_quiz(
+    course_uuid TEXT,
+    quiz_title TEXT DEFAULT 'Course Assessment Quiz'
+)
+RETURNS TEXT
+LANGUAGE plpgsql SECURITY DEFINER
+AS $$
+DECLARE
+    quiz_uuid TEXT;
+    sample_questions JSONB;
+BEGIN
+    quiz_uuid := 'quiz_' || course_uuid || '_' || EXTRACT(EPOCH FROM NOW())::text;
+    
+    sample_questions := '[
+        {
+            "id": "q1",
+            "question": "What is the primary purpose of alternative dispute resolution (ADR)?",
+            "type": "singleChoice",
+            "points": 2,
+            "options": [
+                {"id": "a", "text": "To replace court systems entirely", "isCorrect": false},
+                {"id": "b", "text": "To provide faster and more cost-effective dispute resolution", "isCorrect": true},
+                {"id": "c", "text": "To eliminate the need for lawyers", "isCorrect": false},
+                {"id": "d", "text": "To make legal processes more complex", "isCorrect": false}
+            ],
+            "correctAnswer": "b",
+            "explanation": "ADR aims to provide faster, more cost-effective, and often more flexible dispute resolution compared to traditional litigation."
+        },
+        {
+            "id": "q2",
+            "question": "Which of the following are key principles of mediation?",
+            "type": "multipleChoice",
+            "points": 3,
+            "options": [
+                {"id": "a", "text": "Voluntary participation", "isCorrect": true},
+                {"id": "b", "text": "Confidentiality", "isCorrect": true},
+                {"id": "c", "text": "Neutral facilitation", "isCorrect": true},
+                {"id": "d", "text": "Binding decisions", "isCorrect": false}
+            ],
+            "correctAnswers": ["a", "b", "c"],
+            "explanation": "Mediation is based on voluntary participation, confidentiality, and neutral facilitation. Unlike arbitration, mediation does not result in binding decisions."
+        },
+        {
+            "id": "q3",
+            "question": "Arbitration decisions are legally binding on the parties involved.",
+            "type": "trueFalse",
+            "points": 1,
+            "options": [
+                {"id": "true", "text": "True", "isCorrect": true},
+                {"id": "false", "text": "False", "isCorrect": false}
+            ],
+            "correctAnswer": "true",
+            "explanation": "Yes, arbitration decisions (awards) are legally binding and enforceable in courts, which is one of the key differences from mediation."
+        }
+    ]'::JSONB;
+    
+    INSERT INTO quizzes (
+        id, course_id, title, description, questions, 
+        time_limit, passing_score, is_required, max_attempts
+    ) VALUES (
+        quiz_uuid, 
+        course_uuid, 
+        quiz_title,
+        'Test your understanding of the key concepts covered in this course.',
+        sample_questions,
+        30, -- 30 minutes
+        70, -- 70% passing score
+        TRUE, -- Required for certificate
+        3 -- Max 3 attempts
+    );
+    
+    RETURN quiz_uuid;
+END;
+$$;
+
+-- =============================================================================
+-- VIEWS FOR REPORTING
+-- =============================================================================
+
+-- Course completion dashboard
+CREATE VIEW course_completion_dashboard AS
+SELECT 
+    c.id as course_id,
+    c.title,
+    COUNT(DISTINCT e.user_id) as total_enrolled,
+    COUNT(DISTINCT CASE WHEN cert.id IS NOT NULL THEN e.user_id END) as certificates_issued,
+    ROUND(AVG(e.completion_percentage), 2) as avg_completion,
+    COUNT(DISTINCT qa.user_id) as quiz_participants,
+    ROUND(AVG(qa.percentage), 2) as avg_quiz_score
+FROM courses c
+LEFT JOIN enrollments e ON c.id = e.course_id
+LEFT JOIN certificates cert ON c.id = cert.course_id AND e.user_id = cert.user_id
+LEFT JOIN quiz_attempts qa ON qa.quiz_id IN (
+    SELECT id FROM quizzes WHERE course_id = c.id
+) AND qa.user_id = e.user_id AND qa.completed_at IS NOT NULL
+GROUP BY c.id, c.title
+ORDER BY total_enrolled DESC;
+
+-- User learning analytics
+CREATE VIEW user_learning_analytics AS
+SELECT 
+    u.id as user_id,
+    p.full_name,
+    COUNT(DISTINCT e.course_id) as courses_enrolled,
+    COUNT(DISTINCT cert.course_id) as certificates_earned,
+    ROUND(AVG(e.completion_percentage), 2) as avg_course_completion,
+    COUNT(DISTINCT qa.quiz_id) as quizzes_taken,
+    ROUND(AVG(qa.percentage), 2) as avg_quiz_score,
+    SUM(CASE WHEN qa.is_passed THEN 1 ELSE 0 END) as quizzes_passed
+FROM auth.users u
+JOIN profiles p ON u.id = p.user_id
+LEFT JOIN enrollments e ON u.id = e.user_id
+LEFT JOIN certificates cert ON u.id = cert.user_id
+LEFT JOIN quiz_attempts qa ON u.id = qa.user_id AND qa.completed_at IS NOT NULL
+GROUP BY u.id, p.full_name
+ORDER BY certificates_earned DESC, avg_course_completion DESC;
+
