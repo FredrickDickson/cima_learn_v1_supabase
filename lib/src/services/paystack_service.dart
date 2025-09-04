@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'enhanced_auth_service.dart';
+import '../../config/app_config.dart';
 
 class PaystackService {
   static final PaystackService _instance = PaystackService._internal();
@@ -10,8 +11,9 @@ class PaystackService {
   PaystackService._internal();
 
   final String _baseUrl = 'https://api.paystack.co';
-  String get _secretKey => const String.fromEnvironment('PAYSTACK_SECRET_KEY');
-  String get _publicKey => const String.fromEnvironment('PAYSTACK_PUBLIC_KEY');
+  // Use centralized configuration
+  String get _secretKey => AppConfig.paystackSecretKey;
+  String get _publicKey => AppConfig.paystackPublicKey;
   
   final SupabaseClient _supabase = Supabase.instance.client;
   final EnhancedAuthService _authService = EnhancedAuthService();

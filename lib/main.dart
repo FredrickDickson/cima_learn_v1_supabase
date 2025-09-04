@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'config/supabase_config.dart';
+import 'config/app_config.dart';
 import 'src/app.dart';
 import 'src/providers/theme_provider.dart';
 import 'src/services/enhanced_auth_service.dart';
@@ -19,12 +20,16 @@ Future<void> main() async {
   }
 
   try {
-    // Initialize Supabase with the provided credentials
+    // Validate configuration before initialization
+    AppConfig.validateConfig();
+    
+    // Initialize Supabase using centralized configuration
     await Supabase.initialize(
-      url: supabaseUrl,
-      anonKey: supabaseAnonKey,
+      url: AppConfig.supabaseUrl,
+      anonKey: AppConfig.supabaseKey,
     );
     print('Supabase initialized successfully');
+    print('Payment configuration: ${AppConfig.isPaystackConfigured ? "✓ Configured" : "⚠ Missing"}');
   } catch (e) {
     print('Supabase initialization failed: $e');
   }

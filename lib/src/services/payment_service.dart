@@ -1,5 +1,6 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import '../../config/app_config.dart';
 
 class PaymentService {
   // Note: In production, you would set up your own backend to handle Stripe payments
@@ -7,7 +8,8 @@ class PaymentService {
   
   static const String _baseUrl = 'https://api.stripe.com/v1';
   // Note: This should be stored securely and accessed from your backend
-  static const String _publishableKey = 'pk_test_your_publishable_key_here';
+  // Use centralized configuration for Paystack/Stripe keys
+  static String get _publishableKey => AppConfig.paystackPublicKey;
 
   Future<Map<String, dynamic>> createPaymentIntent({
     required double amount,
@@ -20,7 +22,7 @@ class PaymentService {
       final response = await http.post(
         Uri.parse('$_baseUrl/payment_intents'),
         headers: {
-          'Authorization': 'Bearer sk_test_your_secret_key_here',
+          'Authorization': 'Bearer ${AppConfig.paystackSecretKey}',
           'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: {

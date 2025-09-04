@@ -1,7 +1,8 @@
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'app_config.dart';
 
-const String supabaseUrl = 'https://pgmtaemwcueobaexthaq.supabase.co';
-const String supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBnbXRhZW13Y3Vlb2JhZXh0aGFxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY4NTcwMDcsImV4cCI6MjA3MjQzMzAwN30.UleVbd7A9Fu8ceNgsJdi0Vc226IT0AuhJv7bH-3I4QI';
+// Use centralized configuration - no more hardcoded values
+String get supabaseUrl => AppConfig.supabaseUrl;
+String get supabaseAnonKey => AppConfig.supabaseKey;
 
 // Add a flag to check if we're in offline/demo mode  
 bool get isOfflineMode => supabaseAnonKey.isEmpty;
