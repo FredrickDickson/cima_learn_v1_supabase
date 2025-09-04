@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:provider/provider.dart';
 import 'config/supabase_config.dart';
 import 'src/app.dart';
+import 'src/providers/theme_provider.dart';
+import 'src/services/enhanced_auth_service.dart';
+import 'src/services/cart_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,5 +29,14 @@ Future<void> main() async {
     print('Supabase initialization failed: $e');
   }
 
-  runApp(const CimaLearnApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => EnhancedAuthService()),
+        ChangeNotifierProvider(create: (_) => CartService()),
+      ],
+      child: const CimaLearnApp(),
+    ),
+  );
 }

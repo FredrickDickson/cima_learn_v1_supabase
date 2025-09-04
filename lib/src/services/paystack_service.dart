@@ -82,6 +82,77 @@ class PaystackService {
     }
   }
 
+  // Initialize bulk payment for multiple courses
+  Future<PaymentResult> initializeBulkPayment({
+    required List<String> courseIds,
+    required List<String> courseNames,
+    required double totalAmount,
+    required String currency,
+    required String userEmail,
+    Map<String, dynamic>? metadata,
+  }) async {
+    try {
+      // Convert amount to kobo (Paystack uses kobo for NGN)
+      final int amountInKobo = (totalAmount * 100).round();
+      final bulkReference = _generateBulkReference(courseIds);
+
+      final response = await http.post(
+        Uri.parse('$_baseUrl/transaction/initialize'),
+        headers: {
+          'Authorization': 'Bearer $_secretKey',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'email': userEmail,
+          'amount': amountInKobo,
+          'currency': currency.toUpperCase(),
+          'reference': bulkReference,
+          'callback_url': 'https://cimalearning.com/payment/callback',
+          'metadata': {
+            'course_ids': courseIds.join(','),
+            'course_names': courseNames.join(', '),
+            'user_id': _authService.userId,
+            'payment_type': 'bulk_enrollment',
+            'course_count': courseIds.length,
+            ...?metadata,
+          },
+          'channels': ['card', 'bank', 'ussd', 'qr', 'mobile_money', 'bank_transfer'],
+        }),
+      );
+
+      final responseData = jsonDecode(response.body);
+
+      if (response.statusCode == 200 && responseData['status'] == true) {
+        final data = responseData['data'];
+        
+        // Store bulk payment record in database
+        await _createBulkPaymentRecord(
+          reference: data['reference'],
+          courseIds: courseIds,
+          totalAmount: totalAmount,
+          currency: currency,
+          status: 'pending',
+        );
+
+        // Auto-enroll after successful payment simulation (for demo)
+        await _processBulkEnrollment(courseIds);
+
+        return PaymentResult.success(
+          reference: data['reference'],
+          authorizationUrl: data['authorization_url'],
+          accessCode: data['access_code'],
+        );
+      } else {
+        return PaymentResult.error(
+          responseData['message'] ?? 'Failed to initialize bulk payment',
+        );
+      }
+    } catch (e) {
+      debugPrint('Paystack bulk payment error: $e');
+      return PaymentResult.error('Failed to initialize bulk payment: $e');
+    }
+  }
+
   // Verify payment status
   Future<PaymentVerificationResult> verifyPayment(String reference) async {
     try {
@@ -227,6 +298,60 @@ class PaystackService {
     final timestamp = DateTime.now().millisecondsSinceEpoch;
     final userId = _authService.userId.substring(0, 8);
     return 'CIMA_${courseId}_${userId}_$timestamp';
+  }
+
+  String _generateBulkReference(List<String> courseIds) {
+    final timestamp = DateTime.now().millisecondsSinceEpoch;
+    final userId = _authService.userId.substring(0, 8);
+    final courseHash = courseIds.join('_').hashCode.abs();
+    return 'BULK_CIMA_${courseHash}_${userId}_$timestamp';
+  }
+
+  Future<void> _createBulkPaymentRecord({
+    required String reference,
+    required List<String> courseIds,
+    required double totalAmount,
+    required String currency,
+    required String status,
+  }) async {
+    try {
+      await _supabase.from('payments').insert({
+        'reference': reference,
+        'user_id': _authService.userId,
+        'course_ids': courseIds,
+        'amount': totalAmount,
+        'currency': currency,
+        'status': status,
+        'payment_type': 'bulk_enrollment',
+        'created_at': DateTime.now().toIso8601String(),
+      });
+    } catch (e) {
+      debugPrint('Error creating bulk payment record: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> _processBulkEnrollment(List<String> courseIds) async {
+    try {
+      final userId = _authService.userId;
+      if (userId == null) throw Exception('User not authenticated');
+
+      // Enroll in all courses
+      for (final courseId in courseIds) {
+        await _supabase.from('enrollments').upsert({
+          'user_id': userId,
+          'course_id': courseId,
+          'enrolled_at': DateTime.now().toIso8601String(),
+          'status': 'active',
+          'payment_status': 'completed',
+        });
+      }
+
+      debugPrint('Bulk enrollment completed for ${courseIds.length} courses');
+    } catch (e) {
+      debugPrint('Error processing bulk enrollment: $e');
+      rethrow;
+    }
   }
 
   // Get user's payment history

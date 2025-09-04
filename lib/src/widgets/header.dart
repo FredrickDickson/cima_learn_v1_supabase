@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../services/enhanced_auth_service.dart';
+import 'cart_icon_widget.dart';
 import '../utils/responsive.dart';
 import '../screens/privacy_policy_page.dart';
 import '../screens/terms_of_service_page.dart';
@@ -55,18 +58,23 @@ class Header extends StatelessWidget {
               ],
             ),
           ),
-          if (isMobile)
+          if (isMobile) ...[
+            const CartIconWidget(),
+            const SizedBox(width: 8),
             IconButton(
               icon: const Icon(Icons.menu, size: 24),
               onPressed: () {
                 Scaffold.of(context).openDrawer();
               },
               color: Theme.of(context).colorScheme.onSurface,
-            )
+            ),
+          ]
           else
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
+                const CartIconWidget(),
+                const SizedBox(width: 8),
                 ThemeSwitcherWidget(showLabel: false),
                 PopupMenuButton<String>(
                   onSelected: (String value) {

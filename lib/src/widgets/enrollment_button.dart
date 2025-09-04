@@ -4,6 +4,7 @@ import '../models/cima_course.dart';
 import '../services/enhanced_auth_service.dart';
 import '../services/paystack_service.dart';
 import '../services/enhanced_localization_service.dart';
+import '../services/cart_service.dart';
 import 'paystack_payment_widget.dart';
 
 class EnrollmentButton extends StatefulWidget {
@@ -214,33 +215,93 @@ class _EnrollmentButtonState extends State<EnrollmentButton> {
   }
 
   Widget _buildEnrollButton() {
-    return ElevatedButton.icon(
-      onPressed: _showPaymentDialog,
-      icon: const Icon(Icons.shopping_cart),
-      label: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(EnhancedLocalizationService.t('enroll_now')),
-          if (widget.isExpanded)
-            Text(
-              '₦${widget.course.price.toStringAsFixed(2)}',
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
+    return Consumer<CartService>(
+      builder: (context, cartService, child) {
+        final isInCart = cartService.isInCart(widget.course.id);
+        
+        return Row(
+          mainAxisSize: widget.isExpanded ? MainAxisSize.max : MainAxisSize.min,
+          children: [
+            // Add to Cart Button
+            if (!isInCart)
+              Expanded(
+                flex: widget.isExpanded ? 1 : 0,
+                child: OutlinedButton.icon(
+                  onPressed: () => _addToCart(cartService),
+                  icon: const Icon(Icons.add_shopping_cart),
+                  label: Text(widget.isExpanded ? 'Add to Cart' : ''),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: const Color(0xFFB71C1C),
+                    side: const BorderSide(color: Color(0xFFB71C1C)),
+                    minimumSize: widget.isExpanded 
+                        ? const Size(double.infinity, 48) 
+                        : const Size(50, 40),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                ),
+              ),
+            if (!isInCart && widget.isExpanded) const SizedBox(width: 8),
+            // Enroll Now Button
+            Expanded(
+              flex: widget.isExpanded ? (isInCart ? 2 : 1) : 0,
+              child: ElevatedButton.icon(
+                onPressed: _showPaymentDialog,
+                icon: Icon(isInCart ? Icons.shopping_cart_checkout : Icons.shopping_cart),
+                label: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(isInCart ? 'Buy Now' : EnhancedLocalizationService.t('enroll_now')),
+                    if (widget.isExpanded)
+                      Text(
+                        '₦${widget.course.price.toStringAsFixed(2)}',
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                  ],
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFB71C1C),
+                  foregroundColor: Colors.white,
+                  minimumSize: widget.isExpanded 
+                      ? const Size(double.infinity, 48) 
+                      : const Size(140, 40),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
               ),
             ),
-        ],
-      ),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(0xFFB71C1C),
-        foregroundColor: Colors.white,
-        minimumSize: widget.isExpanded 
-            ? const Size(double.infinity, 48) 
-            : const Size(140, 40),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-      ),
+          ],
+        );
+      },
     );
+  }
+
+  void _addToCart(CartService cartService) {
+    final added = cartService.addToCart(widget.course);
+    if (added) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('${widget.course.title} added to cart'),
+          backgroundColor: Colors.green,
+          action: SnackBarAction(
+            label: 'View Cart',
+            textColor: Colors.white,
+            onPressed: () => Navigator.pushNamed(context, '/cart'),
+          ),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Course is already in cart'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+    }
   }
 }
