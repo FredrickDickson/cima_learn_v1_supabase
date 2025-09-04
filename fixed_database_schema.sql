@@ -8,10 +8,19 @@
 -- Backup existing courses
 CREATE TABLE IF NOT EXISTS courses_backup AS SELECT * FROM courses;
 
--- Drop existing policies
+-- Drop existing policies to avoid conflicts
 DROP POLICY IF EXISTS "Allow public read access to courses" ON courses;
+DROP POLICY IF EXISTS "Public can view courses" ON courses;
+DROP POLICY IF EXISTS "Public can view course modules" ON course_modules;
+DROP POLICY IF EXISTS "Public can view module content" ON module_content;
+DROP POLICY IF EXISTS "Public can view live sessions" ON live_sessions;
 DROP POLICY IF EXISTS "Users can manage their own profile" ON profiles;
 DROP POLICY IF EXISTS "Users can manage their own enrollments" ON enrollments;
+DROP POLICY IF EXISTS "Users manage own progress" ON user_video_progress;
+DROP POLICY IF EXISTS "Users manage own quiz attempts" ON quiz_attempts;
+DROP POLICY IF EXISTS "Users manage own language preferences" ON user_language_preferences;
+DROP POLICY IF EXISTS "Users manage own profiles" ON profiles;
+DROP POLICY IF EXISTS "Users manage own enrollments" ON enrollments;
 
 -- Enhanced courses table to match CIMACourse model
 ALTER TABLE courses ADD COLUMN IF NOT EXISTS description TEXT DEFAULT '';
