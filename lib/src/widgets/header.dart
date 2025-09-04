@@ -98,6 +98,9 @@ class Header extends StatelessWidget {
                           MaterialPageRoute(builder: (context) => const TermsOfServicePage()),
                         );
                         break;
+                      case 'admin':
+                        Navigator.pushNamed(context, '/admin');
+                        break;
                     }
                   },
                   itemBuilder: (BuildContext context) => [
@@ -138,6 +141,14 @@ class Header extends StatelessWidget {
                       child: ListTile(
                         leading: Icon(Icons.description),
                         title: Text('Terms of Service'),
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                    ),
+                    const PopupMenuItem<String>(
+                      value: 'admin',
+                      child: ListTile(
+                        leading: Icon(Icons.admin_panel_settings),
+                        title: Text('Admin Panel'),
                         contentPadding: EdgeInsets.zero,
                       ),
                     ),
