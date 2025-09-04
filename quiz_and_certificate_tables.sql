@@ -19,12 +19,7 @@ CREATE TABLE IF NOT EXISTS quizzes (
     available_until TIMESTAMPTZ,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW(),
-    created_by UUID REFERENCES auth.users(id),
-    
-    -- Indexes for performance
-    INDEX idx_quizzes_course_id (course_id),
-    INDEX idx_quizzes_available (available_from, available_until),
-    INDEX idx_quizzes_created_at (created_at DESC)
+    created_by UUID REFERENCES auth.users(id)
 );
 
 -- =============================================================================
@@ -51,13 +46,7 @@ CREATE TABLE IF NOT EXISTS quiz_attempts (
     UNIQUE(quiz_id, user_id, attempt_number),
     CHECK (percentage >= 0 AND percentage <= 100),
     CHECK (score >= 0),
-    CHECK (total_points >= 0),
-    
-    -- Indexes for performance
-    INDEX idx_quiz_attempts_quiz_id (quiz_id),
-    INDEX idx_quiz_attempts_user_id (user_id),
-    INDEX idx_quiz_attempts_completed (completed_at),
-    INDEX idx_quiz_attempts_percentage (percentage DESC)
+    CHECK (total_points >= 0)
 );
 
 -- =============================================================================
@@ -87,15 +76,7 @@ CREATE TABLE IF NOT EXISTS certificates (
     updated_at TIMESTAMPTZ DEFAULT NOW(),
     
     -- Constraints
-    UNIQUE(user_id, course_id, certificate_type),
-    
-    -- Indexes for performance
-    INDEX idx_certificates_user_id (user_id),
-    INDEX idx_certificates_course_id (course_id),
-    INDEX idx_certificates_verification_code (verification_code),
-    INDEX idx_certificates_certificate_number (certificate_number),
-    INDEX idx_certificates_issued_at (issued_at DESC),
-    INDEX idx_certificates_valid_until (valid_until)
+    UNIQUE(user_id, course_id, certificate_type)
 );
 
 -- =============================================================================
@@ -129,13 +110,7 @@ CREATE TABLE IF NOT EXISTS user_progress (
     
     -- Constraints
     UNIQUE(user_id, course_id, module_id, lesson_id, progress_type),
-    CHECK (progress_percentage >= 0 AND progress_percentage <= 100),
-    
-    -- Indexes for performance
-    INDEX idx_user_progress_user_course (user_id, course_id),
-    INDEX idx_user_progress_module (module_id),
-    INDEX idx_user_progress_status (status),
-    INDEX idx_user_progress_last_accessed (last_accessed DESC)
+    CHECK (progress_percentage >= 0 AND progress_percentage <= 100)
 );
 
 -- =============================================================================
@@ -205,6 +180,35 @@ CREATE TRIGGER update_certificates_updated_at
 CREATE TRIGGER update_user_progress_updated_at 
     BEFORE UPDATE ON user_progress 
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- =============================================================================
+-- CREATE INDEXES SEPARATELY (PostgreSQL syntax)
+-- =============================================================================
+
+-- Indexes for quizzes table
+CREATE INDEX IF NOT EXISTS idx_quizzes_course_id ON quizzes(course_id);
+CREATE INDEX IF NOT EXISTS idx_quizzes_available ON quizzes(available_from, available_until);
+CREATE INDEX IF NOT EXISTS idx_quizzes_created_at ON quizzes(created_at DESC);
+
+-- Indexes for quiz_attempts table
+CREATE INDEX IF NOT EXISTS idx_quiz_attempts_quiz_id ON quiz_attempts(quiz_id);
+CREATE INDEX IF NOT EXISTS idx_quiz_attempts_user_id ON quiz_attempts(user_id);
+CREATE INDEX IF NOT EXISTS idx_quiz_attempts_completed ON quiz_attempts(completed_at);
+CREATE INDEX IF NOT EXISTS idx_quiz_attempts_percentage ON quiz_attempts(percentage DESC);
+
+-- Indexes for certificates table
+CREATE INDEX IF NOT EXISTS idx_certificates_user_id ON certificates(user_id);
+CREATE INDEX IF NOT EXISTS idx_certificates_course_id ON certificates(course_id);
+CREATE INDEX IF NOT EXISTS idx_certificates_verification_code ON certificates(verification_code);
+CREATE INDEX IF NOT EXISTS idx_certificates_certificate_number ON certificates(certificate_number);
+CREATE INDEX IF NOT EXISTS idx_certificates_issued_at ON certificates(issued_at DESC);
+CREATE INDEX IF NOT EXISTS idx_certificates_valid_until ON certificates(valid_until);
+
+-- Indexes for user_progress table
+CREATE INDEX IF NOT EXISTS idx_user_progress_user_course ON user_progress(user_id, course_id);
+CREATE INDEX IF NOT EXISTS idx_user_progress_module ON user_progress(module_id);
+CREATE INDEX IF NOT EXISTS idx_user_progress_status ON user_progress(status);
+CREATE INDEX IF NOT EXISTS idx_user_progress_last_accessed ON user_progress(last_accessed DESC);
 
 -- =============================================================================
 -- USEFUL FUNCTIONS
