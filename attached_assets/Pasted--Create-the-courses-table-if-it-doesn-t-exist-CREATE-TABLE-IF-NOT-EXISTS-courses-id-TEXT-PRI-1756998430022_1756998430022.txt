@@ -1,0 +1,69 @@
+-- Create the courses table if it doesn't exist
+CREATE TABLE IF NOT EXISTS courses (
+    id TEXT PRIMARY KEY,
+    title TEXT NOT NULL,
+    category TEXT NOT NULL,
+    instructor TEXT NOT NULL,
+    rating NUMERIC NOT NULL,
+    review_count INTEGER NOT NULL,
+    student_count INTEGER NOT NULL,
+    duration TEXT NOT NULL,
+    price NUMERIC NOT NULL
+);
+
+-- Ensure missing columns exist
+ALTER TABLE courses ADD COLUMN IF NOT EXISTS original_price NUMERIC;
+ALTER TABLE courses ADD COLUMN IF NOT EXISTS is_bestseller BOOLEAN DEFAULT FALSE;
+ALTER TABLE courses ADD COLUMN IF NOT EXISTS is_popular BOOLEAN DEFAULT FALSE;
+ALTER TABLE courses ADD COLUMN IF NOT EXISTS image TEXT;
+
+-- Create a policy to allow public read access to courses
+DROP POLICY IF EXISTS "Allow public read access to courses" ON courses;
+CREATE POLICY "Allow public read access to courses" ON courses
+FOR SELECT
+TO public
+USING (TRUE);
+
+-- Create the profiles table if it doesn't exist
+CREATE TABLE IF NOT EXISTS profiles (
+    user_id UUID PRIMARY KEY REFERENCES auth.users(id),
+    full_name TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create the enrollments table if it doesn't exist
+CREATE TABLE IF NOT EXISTS enrollments (
+    id SERIAL PRIMARY KEY,
+    user_id UUID REFERENCES auth.users(id),
+    course_id TEXT NOT NULL REFERENCES courses(id),
+    enrolled_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create a policy for profiles: users can manage their own profile
+DROP POLICY IF EXISTS "Users can manage their own profile" ON profiles;
+CREATE POLICY "Users can manage their own profile" ON profiles
+FOR ALL
+TO authenticated
+USING (auth.uid() = user_id);
+
+-- Create a policy for enrollments: users can manage their own enrollments
+DROP POLICY IF EXISTS "Users can manage their own enrollments" ON enrollments;
+CREATE POLICY "Users can manage their own enrollments" ON enrollments
+FOR ALL
+TO authenticated
+USING (auth.uid() = user_id);
+
+-- Insert course data from course_utils.dart, avoiding duplicates
+INSERT INTO courses (
+    id, title, category, instructor, rating, review_count, student_count, duration, price, original_price, is_bestseller, is_popular, image
+) VALUES
+    ('1', 'International Commercial Arbitration: London Practice', 'arbitration', 'Dr. Sarah Mitchell, QC', 4.9, 2847, 12450, '16 hours', 299, 599, TRUE, TRUE, 'assets/images/arbitration-london.jpg'),
+    ('2', 'Mediation Fundamentals for Business Disputes', 'mediation', 'Prof. Michael Chen', 4.8, 1923, 8765, '12 hours', 199, 399, FALSE, TRUE, 'assets/images/mediation-fundamentals.jpg'),
+    ('3', 'Dubai International Arbitration Center (DIAC) Rules', 'arbitration', 'Ahmed Al-Rashid, Esq.', 4.7, 1456, 5432, '10 hours', 249, NULL, FALSE, FALSE, 'assets/images/diac-rules.jpg'),
+    ('4', 'Commercial Law Essentials for Non-Lawyers', 'commercial-law', 'Lisa Thompson, LLB', 4.6, 2134, 9876, '14 hours', 179, 299, FALSE, FALSE, 'assets/images/commercial-law.jpg'),
+    ('5', 'Advanced Mediation Techniques', 'mediation', 'Dr. Aisha Patel', 4.7, 987, 3456, '18 hours', 399, NULL, FALSE, FALSE, 'assets/images/advanced-mediation.jpg'),
+    ('6', 'Corporate Compliance & Risk Management', 'compliance', 'Robert Williams, CPA', 4.5, 1678, 6543, '20 hours', 329, 549, FALSE, FALSE, 'assets/images/compliance-risk.jpg'),
+    ('7', 'International Investment Arbitration', 'arbitration', 'Prof. Elena Rodriguez', 4.8, 892, 2987, '22 hours', 449, NULL, FALSE, TRUE, 'assets/images/investment-arbitration.jpg'),
+    ('8', 'Construction Dispute Resolution', 'corporate-disputes', 'David Kumar, PE', 4.7, 1245, 4321, '15 hours', 279, NULL, FALSE, FALSE, 'assets/images/construction-dispute.jpg'),
+    ('9', 'Ethics in International Arbitration', 'compliance', 'Dr. Marie Dubois', 4.6, 756, 2165, '8 hours', 159, NULL, FALSE, FALSE, 'assets/images/ethics-arbitration.jpg')
+ON CONFLICT (id) DO NOTHING;
