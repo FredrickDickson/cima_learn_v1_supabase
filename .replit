@@ -22,13 +22,13 @@ args = "Flutter Web App"
 name = "Flutter Web App"
 author = "agent"
 
-[workflows.workflow.metadata]
-outputType = "webview"
-
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "python3 flutter_server.py"
+args = "./run_app.sh"
 waitForPort = 5000
+
+[workflows.workflow.metadata]
+outputType = "webview"
 
 [[ports]]
 localPort = 5000
@@ -36,5 +36,5 @@ externalPort = 80
 
 [deployment]
 deploymentTarget = "autoscale"
-run = ["python3", "-m", "http.server", "5000", "--directory", "build/web"]
-build = ["flutter", "build", "web", "--base-href", "/"]
+run = ["python3", "flutter_server.py"]
+build = ["flutter", "build", "web", "--dart-define=SUPABASE_URL=https://pgmtaemwcueobaexthaq.supabase.co", "--dart-define=SUPABASE_KEY=$SUPABASE_KEY", "--base-href", "/"]

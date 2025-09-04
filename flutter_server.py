@@ -2,7 +2,9 @@
 """
 Custom HTTP server for Flutter web apps that handles client-side routing.
 Serves index.html for all routes that don't exist as physical files.
+Configured to work with environment variables for secure deployments.
 """
+import os
 import http.server
 import socketserver
 import os

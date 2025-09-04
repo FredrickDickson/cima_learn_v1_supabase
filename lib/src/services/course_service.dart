@@ -9,6 +9,7 @@ class CourseService {
     try {
       // Check if we're in offline mode and return mock data
       if (isOfflineMode) {
+        print('Running in offline mode - using mock data');
         return _getMockCourses(category);
       }
 
