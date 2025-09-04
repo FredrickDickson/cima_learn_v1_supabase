@@ -19,6 +19,23 @@ class EnhancedAuthService extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   String get userId => _currentUser?.id ?? '';
+  
+  // Role-based getters
+  UserRole get userRole {
+    if (_userProfile == null) return UserRole.student;
+    final roleString = _userProfile!['role'] as String? ?? 'student';
+    return UserRole.values.firstWhere(
+      (role) => role.name == roleString,
+      orElse: () => UserRole.student,
+    );
+  }
+  
+  bool get isStudent => userRole == UserRole.student;
+  bool get isInstructor => userRole == UserRole.instructor;
+  bool get isAdmin => userRole == UserRole.admin;
+  
+  String get displayName => _userProfile?['display_name'] ?? _userProfile?['full_name'] ?? 'User';
+  String get membershipLevel => _userProfile?['cima_membership_level'] ?? 'associate';
 
   // Initialize auth state
   Future<void> initialize() async {
@@ -54,9 +71,35 @@ class EnhancedAuthService extends ChangeNotifier {
 
       if (response != null) {
         _userProfile = response;
+      } else {
+        // Create default profile if none exists
+        await _createDefaultProfile();
       }
     } catch (e) {
       debugPrint('Error loading user profile: $e');
+    }
+  }
+  
+  // Create default profile for existing user
+  Future<void> _createDefaultProfile() async {
+    if (_currentUser == null) return;
+    
+    try {
+      final profileData = {
+        'user_id': _currentUser!.id,
+        'email': _currentUser!.email ?? '',
+        'full_name': _currentUser!.userMetadata?['full_name'] ?? 'User',
+        'display_name': _currentUser!.userMetadata?['full_name']?.split(' ').first ?? 'User',
+        'role': 'student',
+        'cima_membership_level': 'associate',
+        'created_at': DateTime.now().toIso8601String(),
+        'updated_at': DateTime.now().toIso8601String(),
+      };
+
+      await _supabase.from('profiles').upsert(profileData);
+      _userProfile = profileData;
+    } catch (e) {
+      debugPrint('Error creating default profile: $e');
     }
   }
 
@@ -284,6 +327,7 @@ class EnhancedAuthService extends ChangeNotifier {
         'profession': profession,
         'organization': organization,
         'country': country,
+        'role': 'student', // Default role
         'cima_membership_level': 'associate',
         'experience_level': 'beginner',
         'profile_completed': profession != null && organization != null,
@@ -312,6 +356,108 @@ class EnhancedAuthService extends ChangeNotifier {
   void _clearError() {
     _errorMessage = null;
     notifyListeners();
+  }
+
+  // Role management methods
+  Future<AuthResult> requestInstructorRole({
+    required String qualifications,
+    required String experience,
+    String? teachingExperience,
+    String? portfolio,
+  }) async {
+    if (_currentUser == null) {
+      return AuthResult.error('User not authenticated');
+    }
+
+    _setLoading(true);
+    try {
+      // Create instructor application
+      await _supabase.from('instructor_applications').insert({
+        'user_id': _currentUser!.id,
+        'qualifications': qualifications,
+        'experience': experience,
+        'teaching_experience': teachingExperience,
+        'portfolio': portfolio,
+        'status': 'pending',
+        'created_at': DateTime.now().toIso8601String(),
+      });
+
+      return AuthResult.success('Instructor application submitted successfully! We will review your application within 48 hours.');
+    } catch (e) {
+      debugPrint('Error submitting instructor application: $e');
+      return AuthResult.error('Failed to submit instructor application');
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<AuthResult> promoteToInstructor(String userId) async {
+    if (!isAdmin) {
+      return AuthResult.error('Only administrators can promote users');
+    }
+
+    _setLoading(true);
+    try {
+      await _supabase
+          .from('profiles')
+          .update({'role': 'instructor', 'updated_at': DateTime.now().toIso8601String()})
+          .eq('user_id', userId);
+
+      return AuthResult.success('User promoted to instructor successfully');
+    } catch (e) {
+      debugPrint('Error promoting user: $e');
+      return AuthResult.error('Failed to promote user');
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<AuthResult> demoteUser(String userId, UserRole newRole) async {
+    if (!isAdmin) {
+      return AuthResult.error('Only administrators can change user roles');
+    }
+
+    _setLoading(true);
+    try {
+      await _supabase
+          .from('profiles')
+          .update({'role': newRole.name, 'updated_at': DateTime.now().toIso8601String()})
+          .eq('user_id', userId);
+
+      return AuthResult.success('User role updated successfully');
+    } catch (e) {
+      debugPrint('Error updating user role: $e');
+      return AuthResult.error('Failed to update user role');
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  // Check if user has permission to access admin features
+  bool hasAdminAccess() => isAdmin;
+
+  // Check if user has permission to create courses
+  bool canCreateCourses() => isInstructor || isAdmin;
+
+  // Check if user has permission to manage users
+  bool canManageUsers() => isAdmin;
+}
+
+// User roles enum
+enum UserRole {
+  student,
+  instructor,
+  admin;
+
+  String get displayName {
+    switch (this) {
+      case UserRole.student:
+        return 'Student';
+      case UserRole.instructor:
+        return 'Instructor';
+      case UserRole.admin:
+        return 'Administrator';
+    }
   }
 }
 

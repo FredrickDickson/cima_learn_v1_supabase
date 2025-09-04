@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../utils/responsive.dart';
 import '../widgets/header.dart';
 import '../widgets/footer.dart';
-import '../services/content_management_service.dart';
-import '../models/course_module.dart';
+import '../services/enhanced_auth_service.dart';
+import '../services/admin_service.dart';
 import '../models/course.dart';
-import 'content_upload_page.dart';
-import 'course_management_page.dart';
 
 class AdminDashboard extends StatefulWidget {
   const AdminDashboard({Key? key}) : super(key: key);
@@ -16,62 +15,59 @@ class AdminDashboard extends StatefulWidget {
 }
 
 class _AdminDashboardState extends State<AdminDashboard> {
-  final ContentManagementService _contentService = ContentManagementService();
+  late AdminService _adminService;
   int _selectedIndex = 0;
-  Map<String, dynamic> _dashboardStats = {};
   bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
+    _adminService = AdminService();
     _loadDashboardData();
   }
 
   Future<void> _loadDashboardData() async {
-    try {
-      // Load dashboard statistics
-      setState(() {
-        _dashboardStats = {
-          'totalCourses': 12,
-          'totalModules': 48,
-          'totalContent': 156,
-          'totalStudents': 342,
-          'pendingApprovals': 3,
-        };
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error loading dashboard: $e')),
-      );
-    }
+    setState(() => _isLoading = true);
+    await _adminService.loadAllAdminData();
+    setState(() => _isLoading = false);
   }
 
   @override
   Widget build(BuildContext context) {
-    final isMobile = Responsive.isMobile(context);
-    
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('CIMA Admin Dashboard'),
-        backgroundColor: const Color(0xFFB71C1C),
-        foregroundColor: Colors.white,
-        elevation: 0,
-      ),
-      drawer: isMobile ? _buildSidebar() : null,
-      body: Row(
-        children: [
-          if (!isMobile) _buildSidebar(),
-          Expanded(
-            child: _isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : _buildMainContent(),
+    return Consumer<EnhancedAuthService>(
+      builder: (context, auth, child) {
+        // Check admin access
+        if (!auth.hasAdminAccess()) {
+          return _buildAccessDenied();
+        }
+
+        final isMobile = Responsive.isMobile(context);
+        
+        return ChangeNotifierProvider.value(
+          value: _adminService,
+          child: Scaffold(
+            backgroundColor: Colors.grey[50],
+            body: Column(
+              children: [
+                const Header(),
+                Expanded(
+                  child: Row(
+                    children: [
+                      _buildSidebar(),
+                      Expanded(
+                        child: _isLoading
+                            ? const Center(child: CircularProgressIndicator())
+                            : _buildMainContent(),
+                      ),
+                    ],
+                  ),
+                ),
+                const Footer(),
+              ],
+            ),
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -111,13 +107,12 @@ class _AdminDashboardState extends State<AdminDashboard> {
               padding: EdgeInsets.zero,
               children: [
                 _buildNavItem(0, Icons.dashboard, 'Dashboard'),
-                _buildNavItem(1, Icons.library_books, 'Course Management'),
-                _buildNavItem(2, Icons.upload_file, 'Content Upload'),
-                _buildNavItem(3, Icons.video_library, 'Video Library'),
-                _buildNavItem(4, Icons.quiz, 'Assessment Tools'),
-                _buildNavItem(5, Icons.people, 'User Management'),
-                _buildNavItem(6, Icons.analytics, 'Analytics'),
-                _buildNavItem(7, Icons.settings, 'Settings'),
+                _buildNavItem(1, Icons.people, 'User Management'),
+                _buildNavItem(2, Icons.school, 'Course Approval'),
+                _buildNavItem(3, Icons.person_add, 'Instructor Applications'),
+                _buildNavItem(4, Icons.analytics, 'Platform Analytics'),
+                _buildNavItem(5, Icons.notification_important, 'Notifications'),
+                _buildNavItem(6, Icons.settings, 'Platform Settings'),
               ],
             ),
           ),
@@ -151,139 +146,156 @@ class _AdminDashboardState extends State<AdminDashboard> {
     );
   }
 
+  Widget _buildAccessDenied() {
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.lock_outline,
+              size: 64,
+              color: Colors.grey[400],
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Access Denied',
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'You need administrator privileges to access this area.',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Colors.grey[600],
+              ),
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: () => Navigator.of(context).pushReplacementNamed('/'),
+              child: const Text('Go to Home'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildMainContent() {
     switch (_selectedIndex) {
       case 0:
         return _buildDashboardHome();
       case 1:
-        return const CourseManagementPage();
-      case 2:
-        return const ContentUploadPage();
-      case 3:
-        return _buildVideoLibrary();
-      case 4:
-        return _buildAssessmentTools();
-      case 5:
         return _buildUserManagement();
+      case 2:
+        return _buildCourseApproval();
+      case 3:
+        return _buildInstructorApplications();
+      case 4:
+        return _buildPlatformAnalytics();
+      case 5:
+        return _buildNotifications();
       case 6:
-        return _buildAnalytics();
-      case 7:
-        return _buildSettings();
+        return _buildPlatformSettings();
       default:
         return _buildDashboardHome();
     }
   }
 
   Widget _buildDashboardHome() {
-    return Padding(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Dashboard Overview',
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF2E2E2E),
-            ),
-          ),
-          const SizedBox(height: 24),
-          
-          // Stats Cards
-          GridView.count(
-            shrinkWrap: true,
-            crossAxisCount: Responsive.isMobile(context) ? 2 : 4,
-            crossAxisSpacing: 16,
-            mainAxisSpacing: 16,
-            childAspectRatio: 1.5,
+    return Consumer<AdminService>(
+      builder: (context, adminService, child) {
+        final analytics = adminService.platformAnalytics;
+        
+        return SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildStatCard('Total Courses', _dashboardStats['totalCourses'].toString(), 
-                  Icons.library_books, Colors.blue),
-              _buildStatCard('Total Modules', _dashboardStats['totalModules'].toString(), 
-                  Icons.folder, Colors.green),
-              _buildStatCard('Content Items', _dashboardStats['totalContent'].toString(), 
-                  Icons.article, Colors.orange),
-              _buildStatCard('Students', _dashboardStats['totalStudents'].toString(), 
-                  Icons.people, Colors.purple),
-            ],
-          ),
-          
-          const SizedBox(height: 32),
-          
-          // Quick Actions
-          const Text(
-            'Quick Actions',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF2E2E2E),
-            ),
-          ),
-          const SizedBox(height: 16),
-          
-          Wrap(
-            spacing: 16,
-            runSpacing: 16,
-            children: [
-              _buildQuickActionCard(
-                'Upload Content',
-                'Add new videos, documents, or quizzes',
-                Icons.upload,
-                () => setState(() => _selectedIndex = 2),
-              ),
-              _buildQuickActionCard(
-                'Create Course',
-                'Start building a new course',
-                Icons.add_circle,
-                () => setState(() => _selectedIndex = 1),
-              ),
-              _buildQuickActionCard(
-                'View Analytics',
-                'Check performance metrics',
-                Icons.analytics,
-                () => setState(() => _selectedIndex = 6),
-              ),
-            ],
-          ),
-          
-          const SizedBox(height: 32),
-          
-          // Recent Activity
-          const Text(
-            'Recent Activity',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF2E2E2E),
-            ),
-          ),
-          const SizedBox(height: 16),
-          
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, 2),
+              Text(
+                'Admin Dashboard',
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
                 ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Platform overview and management tools',
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  color: Colors.grey[600],
+                ),
+              ),
+              const SizedBox(height: 32),
+              
+              if (analytics != null) ..[
+                // Stats Cards
+                GridView.count(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  crossAxisCount: Responsive.isMobile(context) ? 2 : 4,
+                  crossAxisSpacing: 16,
+                  mainAxisSpacing: 16,
+                  childAspectRatio: 1.5,
+                  children: [
+                    _buildStatCard('Total Users', analytics['totalUsers'].toString(), 
+                        Icons.people, const Color(0xFFB71C1C)),
+                    _buildStatCard('Total Courses', analytics['totalCourses'].toString(), 
+                        Icons.school, const Color(0xFF1976D2)),
+                    _buildStatCard('Total Revenue', '₦${analytics['totalRevenue'].toStringAsFixed(0)}', 
+                        Icons.monetization_on, const Color(0xFF388E3C)),
+                    _buildStatCard('This Month', '₦${analytics['thisMonthRevenue'].toStringAsFixed(0)}', 
+                        Icons.trending_up, const Color(0xFFFF9800)),
+                  ],
+                ),
+                const SizedBox(height: 32),
+                _buildUserBreakdown(analytics),
+                const SizedBox(height: 32),
               ],
-            ),
-            child: Column(
-              children: [
-                _buildActivityItem('New course "Advanced Arbitration" created', '2 hours ago'),
-                _buildActivityItem('Video uploaded to "Mediation Basics"', '4 hours ago'),
-                _buildActivityItem('Quiz "Contract Law Fundamentals" completed by 15 students', '6 hours ago'),
-                _buildActivityItem('Course "International Trade Law" published', '1 day ago'),
-              ],
-            ),
+              // Quick Actions
+              Text(
+                'Quick Actions',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 16),
+              
+              Wrap(
+                spacing: 16,
+                runSpacing: 16,
+                children: [
+                  _buildQuickActionCard(
+                    'Manage Users',
+                    'View and manage user accounts',
+                    Icons.people,
+                    () => setState(() => _selectedIndex = 1),
+                  ),
+                  _buildQuickActionCard(
+                    'Course Approval',
+                    'Review pending course submissions',
+                    Icons.school,
+                    () => setState(() => _selectedIndex = 2),
+                  ),
+                  _buildQuickActionCard(
+                    'Instructor Applications',
+                    'Review instructor applications',
+                    Icons.person_add,
+                    () => setState(() => _selectedIndex = 3),
+                  ),
+                  _buildQuickActionCard(
+                    'Platform Analytics',
+                    'View detailed analytics',
+                    Icons.analytics,
+                    () => setState(() => _selectedIndex = 4),
+                  ),
+                ],
+              ),
+              
+              const SizedBox(height: 32),
+              _buildPendingActions(adminService),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -426,23 +438,177 @@ class _AdminDashboardState extends State<AdminDashboard> {
     );
   }
 
-  Widget _buildVideoLibrary() {
-    return const Center(child: Text('Video Library - Coming Soon'));
+  Widget _buildUserBreakdown(Map<String, dynamic> analytics) {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'User Distribution',
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: _buildUserTypeCard('Students', analytics['students'], Colors.blue),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: _buildUserTypeCard('Instructors', analytics['instructors'], Colors.green),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: _buildUserTypeCard('Admins', analytics['admins'], Colors.red),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 
-  Widget _buildAssessmentTools() {
-    return const Center(child: Text('Assessment Tools - Coming Soon'));
+  Widget _buildUserTypeCard(String type, int count, Color color) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withOpacity(0.3)),
+      ),
+      child: Column(
+        children: [
+          Text(
+            count.toString(),
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            type,
+            style: TextStyle(
+              fontSize: 14,
+              color: color,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPendingActions(AdminService adminService) {
+    final pendingApplications = adminService.instructorApplications
+        .where((app) => app['status'] == 'pending')
+        .length;
+    final pendingCourses = adminService.pendingCourses.length;
+    
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Pending Actions',
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 16),
+          if (pendingApplications > 0) 
+            ListTile(
+              leading: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.orange.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(Icons.person_add, color: Colors.orange),
+              ),
+              title: Text('$pendingApplications Instructor Applications'),
+              subtitle: const Text('Pending review'),
+              trailing: TextButton(
+                onPressed: () => setState(() => _selectedIndex = 3),
+                child: const Text('Review'),
+              ),
+            ),
+          if (pendingCourses > 0)
+            ListTile(
+              leading: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.blue.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(Icons.school, color: Colors.blue),
+              ),
+              title: Text('$pendingCourses Course Submissions'),
+              subtitle: const Text('Awaiting approval'),
+              trailing: TextButton(
+                onPressed: () => setState(() => _selectedIndex = 2),
+                child: const Text('Review'),
+              ),
+            ),
+          if (pendingApplications == 0 && pendingCourses == 0)
+            const ListTile(
+              leading: Icon(Icons.check_circle, color: Colors.green),
+              title: Text('All caught up!'),
+              subtitle: Text('No pending actions at this time'),
+            ),
+        ],
+      ),
+    );
   }
 
   Widget _buildUserManagement() {
     return const Center(child: Text('User Management - Coming Soon'));
   }
 
-  Widget _buildAnalytics() {
-    return const Center(child: Text('Analytics - Coming Soon'));
+  Widget _buildCourseApproval() {
+    return const Center(child: Text('Course Approval - Coming Soon'));
   }
 
-  Widget _buildSettings() {
-    return const Center(child: Text('Settings - Coming Soon'));
+  Widget _buildInstructorApplications() {
+    return const Center(child: Text('Instructor Applications - Coming Soon'));
+  }
+
+  Widget _buildPlatformAnalytics() {
+    return const Center(child: Text('Platform Analytics - Coming Soon'));
+  }
+
+  Widget _buildNotifications() {
+    return const Center(child: Text('Notifications - Coming Soon'));
+  }
+
+  Widget _buildPlatformSettings() {
+    return const Center(child: Text('Platform Settings - Coming Soon'));
   }
 }

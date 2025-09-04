@@ -1,0 +1,129 @@
+1. Student User Flow
+
+Start: App Launch → Login/Signup
+
+Flow Steps:
+
+Login / Signup
+
+Options: Email/Password, Google, Apple
+
+Success → Home Screen
+
+Failure → Show error
+
+Home / Browse Courses
+
+Search courses, filter by category/level
+
+Tap course → Course Detail
+
+Course Detail
+
+Preview lessons
+
+Reviews & ratings
+
+Enroll button → Payment
+
+Payment (Paystack)
+
+Paystack Checkout opens
+
+Success → Backend verifies via Supabase Function
+
+Failure → Retry or Cancel
+
+Access Course
+
+View course sections and lessons
+
+Video lessons with progress tracking
+
+Download resources
+
+Take quizzes / submit assignments
+
+Engagement
+
+Post comments / discussions
+
+Rate & review course
+
+Receive notifications (new lessons, announcements)
+
+Completion
+
+Complete all lessons → Generate certificate (Supabase Function)
+
+Option to enroll in more courses
+
+2. Instructor User Flow
+
+Start: App Launch → Login/Signup
+
+Flow Steps:
+
+Login / Signup
+
+Options: Email/Password, Google, Apple
+
+Role check → Instructor Dashboard
+
+Instructor Dashboard
+
+View courses, analytics, earnings
+
+Option: Create New Course
+
+Create Course
+
+Enter course title, description, category, thumbnail
+
+Add sections/modules
+
+Upload lessons (video/PDF/text)
+
+Add quizzes / assignments
+
+Set pricing → Publish
+
+Course Management
+
+Edit course content
+
+Track enrollments
+
+View student progress
+
+View revenue (Paystack transactions via Supabase backend)
+
+Student Interaction
+
+Reply to comments / discussion threads
+
+Approve assignments if required
+
+3. Admin Flow (Optional)
+
+Login / Dashboard
+
+Manage users (approve/reject instructors, block students)
+
+Approve/reject courses
+
+View platform analytics
+
+Handle refunds / Paystack transactions
+
+Send notifications
+
+Visualizing in Figma
+
+Frames = Screens: Login, Home, Course Detail, Payment, Lesson, Dashboard, etc.
+
+Arrows = Navigation: Show how tapping buttons moves to the next frame
+
+Decision points: Payment success/failure, login success/failure
+
+Optional notes: Show backend verification (Supabase) for Paystack

@@ -8,6 +8,7 @@ import '../src/screens/signup_page.dart' as signup;
 import '../src/screens/enrolled_courses_page.dart';
 import '../src/screens/cart_page.dart';
 import '../src/screens/admin_dashboard.dart';
+import '../src/screens/instructor_dashboard.dart';
 import '../src/screens/learning_paths_page.dart';
 import '../src/screens/free_intro_course_page.dart';
 
@@ -31,6 +32,9 @@ class AppRoutes {
 
       case '/admin':
         return MaterialPageRoute(builder: (_) => const AdminDashboard());
+
+      case '/instructor':
+        return MaterialPageRoute(builder: (_) => const InstructorDashboard());
 
       case '/learning-paths':
         return MaterialPageRoute(builder: (_) => const LearningPathsPage());

@@ -19,8 +19,8 @@ enum CourseCategory {
 }
 
 class CIMACourse extends Course {
-  final CIMALevel level;
-  final CourseCategory category;
+  final CIMALevel cimaLevel;
+  final CourseCategory courseCategory;
   final List<String> prerequisites;
   final int sessionCount;
   final String deliveryMode; // 'virtual', 'in-person', 'hybrid'
@@ -39,8 +39,8 @@ class CIMACourse extends Course {
     required double rating,
     required String imageUrl,
     required int duration,
-    required this.level,
-    required this.category,
+    required this.cimaLevel,
+    required this.courseCategory,
     this.prerequisites = const [],
     required this.sessionCount,
     required this.deliveryMode,
@@ -58,10 +58,12 @@ class CIMACourse extends Course {
           rating: rating,
           imageUrl: imageUrl,
           duration: duration,
+          level: cimaLevel.toString().split('.').last,
+          category: courseCategory.toString().split('.').last,
         );
 
   String get levelDisplayName {
-    switch (level) {
+    switch (cimaLevel) {
       case CIMALevel.associate:
         return 'Associate (ACIMArb)';
       case CIMALevel.member:
@@ -72,7 +74,7 @@ class CIMACourse extends Course {
   }
 
   String get categoryDisplayName {
-    switch (category) {
+    switch (courseCategory) {
       case CourseCategory.adr:
         return 'Alternative Dispute Resolution';
       case CourseCategory.arbitration:
@@ -95,7 +97,7 @@ class CIMACourse extends Course {
   }
 
   String get difficultyLevel {
-    switch (level) {
+    switch (cimaLevel) {
       case CIMALevel.associate:
         return 'Beginner';
       case CIMALevel.member:
@@ -113,8 +115,8 @@ class CIMACourse extends Course {
   Map<String, dynamic> toJson() {
     final json = super.toJson();
     json.addAll({
-      'level': level.toString().split('.').last,
-      'category': category.toString().split('.').last,
+      'level': cimaLevel.toString().split('.').last,
+      'category': courseCategory.toString().split('.').last,
       'prerequisites': prerequisites,
       'session_count': sessionCount,
       'delivery_mode': deliveryMode,
@@ -137,11 +139,11 @@ class CIMACourse extends Course {
       rating: (json['rating'] ?? 4.5).toDouble(),
       imageUrl: json['imageUrl'] ?? json['image_url'] ?? '',
       duration: json['duration'] ?? 0,
-      level: CIMALevel.values.firstWhere(
+      cimaLevel: CIMALevel.values.firstWhere(
         (e) => e.toString().split('.').last == json['level'],
         orElse: () => CIMALevel.associate,
       ),
-      category: CourseCategory.values.firstWhere(
+      courseCategory: CourseCategory.values.firstWhere(
         (e) => e.toString().split('.').last == json['category'],
         orElse: () => CourseCategory.adr,
       ),
