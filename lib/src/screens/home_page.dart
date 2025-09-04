@@ -6,6 +6,7 @@ import '../widgets/hero_section.dart';
 import '../widgets/course_categories.dart';
 import '../widgets/course_card.dart';
 import '../widgets/footer.dart';
+import '../../config/supabase_config.dart';
 
 
 
@@ -134,6 +135,31 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
             padding: const EdgeInsets.all(16),
             children: [
               Header(isMobile: isMobile),
+              if (isOfflineMode)
+                Container(
+                  margin: const EdgeInsets.only(bottom: 16),
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.blue.shade50,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.blue.shade200),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.info_outline, color: Colors.blue.shade600, size: 20),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'Demo Mode: Showing sample courses. Connect to database for live data.',
+                          style: TextStyle(
+                            color: Colors.blue.shade700,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               const SizedBox(height: 24),
               FadeTransition(
                 opacity: _fadeAnimation,
