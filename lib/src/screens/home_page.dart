@@ -242,14 +242,6 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => showToast('Button clicked!'),
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        elevation: 6,
-        shape: const CircleBorder(),
-        child: const Icon(Icons.add, color: Colors.white),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 }

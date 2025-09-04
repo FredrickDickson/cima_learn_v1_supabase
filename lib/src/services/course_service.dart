@@ -13,6 +13,9 @@ class CourseService {
         return _getMockCourses(category);
       }
 
+      print('Connecting to Supabase with URL: $supabaseUrl');
+      print('Supabase key available: ${supabaseAnonKey.isNotEmpty}');
+
       final response = await Supabase.instance.client
           .from('courses')
           .select()
