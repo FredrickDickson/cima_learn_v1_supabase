@@ -1,3 +1,88 @@
+enum ContentType {
+  video,
+  document,
+  text,
+  quiz,
+  assignment,
+  live_session,
+  audio,
+  presentation,
+  interactive,
+  pdf,
+  image
+}
+
+class CourseContent {
+  final String id;
+  final String moduleId;
+  final String title;
+  final String description;
+  final ContentType contentType;
+  final String? fileUrl;
+  final String? textContent;
+  final Map<String, dynamic>? quizData;
+  final int orderIndex;
+  final int durationMinutes;
+  final bool isRequired;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+
+  CourseContent({
+    required this.id,
+    required this.moduleId,
+    required this.title,
+    required this.description,
+    required this.contentType,
+    this.fileUrl,
+    this.textContent,
+    this.quizData,
+    required this.orderIndex,
+    required this.durationMinutes,
+    this.isRequired = true,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  factory CourseContent.fromJson(Map<String, dynamic> json) {
+    return CourseContent(
+      id: json['id'],
+      moduleId: json['module_id'],
+      title: json['title'],
+      description: json['description'],
+      contentType: ContentType.values.firstWhere(
+        (type) => type.name == json['content_type'],
+        orElse: () => ContentType.text,
+      ),
+      fileUrl: json['file_url'],
+      textContent: json['text_content'],
+      quizData: json['quiz_data'],
+      orderIndex: json['order_index'],
+      durationMinutes: json['duration_minutes'],
+      isRequired: json['is_required'] ?? true,
+      createdAt: DateTime.parse(json['created_at']),
+      updatedAt: DateTime.parse(json['updated_at']),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'module_id': moduleId,
+      'title': title,
+      'description': description,
+      'content_type': contentType.name,
+      'file_url': fileUrl,
+      'text_content': textContent,
+      'quiz_data': quizData,
+      'order_index': orderIndex,
+      'duration_minutes': durationMinutes,
+      'is_required': isRequired,
+      'created_at': createdAt.toIso8601String(),
+      'updated_at': updatedAt.toIso8601String(),
+    };
+  }
+}
+
 class CourseModule {
   final String id;
   final String courseId;

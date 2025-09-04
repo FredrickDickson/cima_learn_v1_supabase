@@ -49,7 +49,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
             backgroundColor: Colors.grey[50],
             body: Column(
               children: [
-                const Header(),
+                Header(isMobile: isMobile),
                 Expanded(
                   child: Row(
                     children: [
@@ -226,7 +226,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
               ),
               const SizedBox(height: 32),
               
-              if (analytics != null) ..[
+              if (analytics != null) ...[
                 // Stats Cards
                 GridView.count(
                   shrinkWrap: true,

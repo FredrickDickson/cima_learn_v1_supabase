@@ -707,12 +707,15 @@ class _ContentUploadPageState extends State<ContentUploadPage> with SingleTicker
         moduleId: _selectedModuleId!,
         contentType: _selectedContentType,
         title: _titleController.text,
-        contentUrl: contentUrl,
-        contentData: _contentData.isNotEmpty ? _contentData : null,
+        description: _descriptionController.text,
+        fileUrl: contentUrl,
+        textContent: _textContent.isNotEmpty ? _textContent : null,
+        quizData: _quizQuestions.isNotEmpty ? {'questions': _quizQuestions} : null,
         orderIndex: 0, // Will be set based on existing content
         durationMinutes: int.tryParse(_durationController.text) ?? 0,
         isRequired: _isRequired,
         createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
       );
 
       await _contentService.createContent(content);

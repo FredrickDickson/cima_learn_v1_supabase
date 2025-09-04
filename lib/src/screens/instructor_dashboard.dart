@@ -4,6 +4,7 @@ import '../services/enhanced_auth_service.dart';
 import '../services/instructor_service.dart';
 import '../widgets/header.dart';
 import '../widgets/footer.dart';
+import '../utils/responsive.dart';
 import 'course_creation_page.dart';
 import 'instructor_analytics_page.dart';
 import 'instructor_courses_page.dart';
@@ -43,11 +44,13 @@ class _InstructorDashboardState extends State<InstructorDashboard> {
           return _buildAccessDenied();
         }
 
+        final isMobile = Responsive.isMobile(context);
+        
         return Scaffold(
           backgroundColor: Colors.grey[50],
           body: Column(
             children: [
-              const Header(),
+              Header(isMobile: isMobile),
               Expanded(
                 child: Row(
                   children: [

@@ -57,7 +57,7 @@ class CartService extends ChangeNotifier {
       title: course.title,
       instructor: course.instructor,
       price: course.price,
-      imageUrl: course.imageUrl,
+      imageUrl: course.image,
       addedAt: DateTime.now(),
       category: course.category.toString().split('.').last,
       level: course.level.toString().split('.').last,
