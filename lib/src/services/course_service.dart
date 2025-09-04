@@ -1,6 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/course.dart';
-import '../utils/course_utils.dart';
 import '../../config/supabase_config.dart';
 
 class CourseService {
@@ -37,6 +36,7 @@ class CourseService {
           isBestseller: data['is_bestseller'] as bool,
           isPopular: data['is_popular'] as bool,
           image: data['image'] as String,
+          description: data['description'] as String? ?? '',
         );
       }).toList();
 
@@ -66,6 +66,7 @@ class CourseService {
         image: 'assets/images/arbitration-london.jpg',
         isPopular: true,
         isBestseller: false,
+        description: 'Learn the fundamentals of international commercial arbitration.',
       ),
       Course(
         id: '2',
@@ -81,6 +82,7 @@ class CourseService {
         image: 'assets/images/advanced-mediation.jpg',
         isPopular: false,
         isBestseller: true,
+        description: 'Master advanced mediation techniques for complex disputes.',
       ),
       Course(
         id: '3',
@@ -97,6 +99,7 @@ class CourseService {
         image: 'assets/images/diac-rules.jpg',
         isPopular: true,
         isBestseller: false,
+        description: 'Comprehensive guide to DIAC arbitration rules and procedures.',
       ),
       Course(
         id: '4',
@@ -112,6 +115,7 @@ class CourseService {
         image: 'assets/images/commercial-law.jpg',
         isPopular: false,
         isBestseller: false,
+        description: 'Essential commercial law principles for dispute resolution.',
       ),
       Course(
         id: '5',
@@ -128,6 +132,7 @@ class CourseService {
         image: 'assets/images/investment-arbitration.jpg',
         isPopular: false,
         isBestseller: true,
+        description: 'Specialized course on investment treaty arbitration.',
       ),
       Course(
         id: '6',
@@ -138,11 +143,12 @@ class CourseService {
         duration: '9 hours',
         studentCount: 678,
         price: 329.0,
-        category: 'corporate-disputes',
+        category: 'arbitration',
         level: 'Intermediate',
         image: 'assets/images/construction-dispute.jpg',
         isPopular: true,
         isBestseller: false,
+        description: 'Specialized training in construction dispute resolution.',
       ),
       Course(
         id: '7',
@@ -158,6 +164,7 @@ class CourseService {
         image: 'assets/images/compliance-risk.jpg',
         isPopular: false,
         isBestseller: false,
+        description: 'Comprehensive compliance and risk management strategies.',
       ),
       Course(
         id: '8',
@@ -174,6 +181,7 @@ class CourseService {
         image: 'assets/images/ethics-arbitration.jpg',
         isPopular: true,
         isBestseller: true,
+        description: 'Essential ethical principles in international arbitration.',
       ),
     ];
 

@@ -7,20 +7,22 @@ import 'src/app.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Load environment variables
-  await dotenv.load(fileName: ".env");
+  try {
+    // Load environment variables
+    await dotenv.load(fileName: ".env");
+  } catch (e) {
+    print('Could not load .env file: $e');
+  }
 
   try {
-    // Only initialize Supabase if we have a valid key
-    if (!isOfflineMode && supabaseAnonKey.isNotEmpty) {
-      await Supabase.initialize(
-        url: supabaseUrl,
-        anonKey: supabaseAnonKey,
-      );
-    }
+    // Initialize Supabase with the provided credentials
+    await Supabase.initialize(
+      url: supabaseUrl,
+      anonKey: supabaseAnonKey,
+    );
+    print('Supabase initialized successfully');
   } catch (e) {
-    // Silently fail and continue in offline mode
-    print('Supabase initialization failed, continuing in offline mode: $e');
+    print('Supabase initialization failed: $e');
   }
 
   runApp(const CimaLearnApp());

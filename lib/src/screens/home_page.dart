@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import '../services/course_service.dart';
+import '../services/enhanced_course_service.dart';
+import '../services/localization_service.dart';
 import '../widgets/header.dart';
 import '../widgets/hero_section.dart';
 import '../widgets/course_categories.dart';
 import '../widgets/course_card.dart';
 import '../widgets/footer.dart';
+import '../widgets/search_bar_widget.dart';
+import '../models/course.dart';
 import '../../config/supabase_config.dart';
 
 
@@ -22,7 +25,10 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   bool showMore = false;
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
-  final CourseService _courseService = CourseService();
+  final EnhancedCourseService _courseService = EnhancedCourseService();
+  String _searchQuery = '';
+  List<Course> _allCourses = [];
+  List<Course> _filteredCourses = [];
 
   bool get isMobile => MediaQuery.of(context).size.width < 768;
 
@@ -48,8 +54,34 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     _fadeAnimation = CurvedAnimation(parent: _controller, curve: Curves.easeInOut);
     _controller.forward();
 
+    _loadCourses();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       showToast('Welcome to CIMA Learn Hub!');
+    });
+  }
+
+  Future<void> _loadCourses() async {
+    final courses = await _courseService.searchCourses();
+    setState(() {
+      _allCourses = courses;
+      _filteredCourses = courses;
+    });
+  }
+
+  void _handleSearchChange(String query) {
+    setState(() {
+      _searchQuery = query;
+    });
+    _performSearch();
+  }
+
+  Future<void> _performSearch() async {
+    final courses = await _courseService.searchCourses(
+      query: _searchQuery.isEmpty ? null : _searchQuery,
+      category: activeCategory == 'all' ? null : activeCategory,
+    );
+    setState(() {
+      _filteredCourses = courses;
     });
   }
 
@@ -119,17 +151,9 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
               ),
             )
           : null,
-      body: FutureBuilder<List>(
-        future: _courseService.getFilteredCourses(activeCategory),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasError) {
-            return const Center(child: Text('Error loading courses'));
-          }
-          final filteredCourses = snapshot.data ?? [];
-          final displayedCourses = showMore ? filteredCourses : filteredCourses.take(6).toList();
+      body: Builder(
+        builder: (context) {
+          final displayedCourses = showMore ? _filteredCourses : _filteredCourses.take(6).toList();
 
           return ListView(
             padding: const EdgeInsets.all(16),
@@ -166,6 +190,12 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                 child: const HeroSection(),
               ),
               const SizedBox(height: 24),
+              // Search Bar
+              SearchBarWidget(
+                onSearchChanged: _handleSearchChange,
+                initialQuery: _searchQuery,
+              ),
+              const SizedBox(height: 24),
               CourseCategories(
                 activeCategory: activeCategory,
                 onCategoryChange: (category) {
@@ -175,6 +205,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                     _controller.reset();
                     _controller.forward();
                   });
+                  _performSearch();
                 },
                 isMobile: isMobile,
               ),
@@ -223,7 +254,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                 },
               ),
               const SizedBox(height: 16),
-              if (filteredCourses.length > 6)
+              if (_filteredCourses.length > 6)
                 Center(
                   child: ElevatedButton(
                     onPressed: () {
@@ -233,7 +264,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                         _controller.forward();
                       });
                     },
-                    child: Text(showMore ? 'Show Less' : 'View All ${filteredCourses.length} Courses'),
+                    child: Text(showMore ? 'Show Less' : 'View All ${_filteredCourses.length} Courses'),
                   ),
                 ),
               const SizedBox(height: 24),
