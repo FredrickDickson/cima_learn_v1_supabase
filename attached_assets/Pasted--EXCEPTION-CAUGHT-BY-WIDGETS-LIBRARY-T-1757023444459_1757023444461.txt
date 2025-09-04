@@ -1,0 +1,97 @@
+╡ EXCEPTION CAUGHT BY WIDGETS LIBRARY
+╞═══════════════════════════════════════════════════════════
+The following assertion was thrown building
+MaterialApp(state: _MaterialAppState#b256f):
+Assertion failed:
+file:///C:/dev/flutter/packages/flutter/lib/src/widgets/app.dart:375:10
+home == null ||
+!routes.containsKey(Navigator.defaultRouteName)
+"If the home property is specified, the routes table
+cannot include an entry for \"/\", since it
+would be redundant."
+
+The relevant error-causing widget was:
+  MaterialApp
+  MaterialApp:file:///C:/Users/Administrator/Documents/c  ima_learn_hub/cima_learn_v1_supabase/lib/src/app.dart:  127:18
+
+When the exception was thrown, this was the stack:      
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/errors.dart 274:3       throw_
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/errors.dart 44:3        assertFailed
+package:flutter/src/widgets/app.dart 375:33
+new
+package:flutter/src/material/app.dart 1101:12
+[_buildWidgetApp]
+package:flutter/src/material/app.dart 1139:21
+build
+package:flutter/src/widgets/framework.dart 5833:27      
+build
+package:flutter/src/widgets/framework.dart 5723:15      
+performRebuild
+package:flutter/src/widgets/framework.dart 5884:11      
+performRebuild
+package:flutter/src/widgets/framework.dart 5435:7
+rebuild
+package:flutter/src/widgets/framework.dart 5909:5
+update
+package:flutter/src/widgets/framework.dart 3982:14
+updateChild
+package:flutter/src/widgets/framework.dart 5747:16      
+performRebuild
+package:flutter/src/widgets/framework.dart 5435:7       
+rebuild
+package:flutter/src/widgets/framework.dart 2695:14
+[_tryRebuild]
+package:flutter/src/widgets/framework.dart 2752:11      
+[_flushDirtyElements]
+package:flutter/src/widgets/framework.dart 3056:17
+buildScope
+package:flutter/src/widgets/binding.dart 1259:9
+drawFrame
+package:flutter/src/rendering/binding.dart 495:5        
+[_handlePersistentFrameCallback]
+DebugService: Error serving requestsError: Unsupported  
+operation: Cannot send Null
+DebugService: Error serving requestsError: Unsupported
+operation: Cannot send Null
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/operations.dart 118:77  tear
+package:flutter/src/scheduler/binding.dart 1434:7       
+[_invokeFrameCallback]
+package:flutter/src/scheduler/binding.dart 1347:9       
+handleDrawFrame
+package:flutter/src/scheduler/binding.dart 1200:5       
+[_handleDrawFrame]
+dart-sdk/lib/_internal/js_dev_runtime/private/ddc_runtime/operations.dart 118:77  tear
+lib/_engine/engine/platform_dispatcher.dart 1522:5
+invoke
+The Flutter DevTools debugger and profiler on Chrome is 
+available at:
+http://127.0.0.1:9101?uri=http://127.0.0.1:64168/n02Yn4F_fiQ=
+lib/_engine/engine/platform_dispatcher.dart 265:5       
+invokeOnDrawFrame
+lib/_engine/engine/frame_service.dart 192:32
+[_renderFrame]
+lib/_engine/engine/frame_service.dart 99:9
+<fn>
+dart-sdk/lib/async/zone.dart 1849:54
+runUnary
+dart-sdk/lib/async/zone.dart 1804:26
+<fn>
+dart-sdk/lib/_internal/js_dev_runtime/patch/js_allow_interop_patch.dart 224:27    _callDartFunctionFast1        
+
+════════════════════════════════════════════════════════════════════════════════════════════════════
+DebugService: Error serving requestsError: Unsupported
+operation: Cannot send Null
+DebugService: Error serving requestsError: Unsupported
+operation: Cannot send Null
+DebugService: Error serving requestsError: Unsupported
+operation: Cannot send Null
+DebugService: Error serving requestsError: Unsupported
+operation: Cannot send Null
+DebugService: Error serving requestsError: Unsupported
+operation: Cannot send Null
+DebugService: Error serving requestsError: Unsupported
+operation: Cannot send Null
+DebugService: Error serving requestsError: Unsupported
+operation: Cannot send Null
+DebugService: Error serving requestsError: Unsupported
+operation: Cannot send Null
