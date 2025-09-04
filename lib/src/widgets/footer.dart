@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../screens/privacy_policy_page.dart';
+import '../screens/terms_of_service_page.dart';
 
 class Footer extends StatelessWidget {
   const Footer({super.key});
@@ -25,14 +27,24 @@ class Footer extends StatelessWidget {
             spacing: 16,
             children: [
               TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const PrivacyPolicyPage()),
+                  );
+                },
                 child: Text(
                   'Privacy Policy',
                   style: TextStyle(color: Theme.of(context).colorScheme.primary),
                 ),
               ),
               TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const TermsOfServicePage()),
+                  );
+                },
                 child: Text(
                   'Terms of Service',
                   style: TextStyle(color: Theme.of(context).colorScheme.primary),
