@@ -1,116 +1,141 @@
-# 🎓 CIMA Learn Hub
+# 🎓 CIMA Learn - Professional Dispute Resolution Training Platform
 
-> **Professional Dispute Resolution Training Platform**
+> **Comprehensive Learning Management System for International Arbitration, Mediation & Commercial Law**
 
-A comprehensive Flutter web application providing world-class training in International Arbitration, Mediation, Commercial Law, and Compliance. Built for the Chartered Institute of Arbitrators (CIMA) to deliver structured learning paths, interactive assessments, and professional certification.
+A cutting-edge Flutter web application delivering world-class training in dispute resolution. Built for professionals seeking CIMA certification and expertise in arbitration, mediation, commercial law, and compliance.
 
-[![Flutter](https://img.shields.io/badge/Flutter-3.x-blue.svg)](https://flutter.dev/)
+[![Flutter](https://img.shields.io/badge/Flutter-3.32.0-blue.svg)](https://flutter.dev/)
 [![Supabase](https://img.shields.io/badge/Supabase-Backend-green.svg)](https://supabase.com/)
 [![Paystack](https://img.shields.io/badge/Paystack-Payments-orange.svg)](https://paystack.com/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Production](https://img.shields.io/badge/Status-Production%20Ready-brightgreen.svg)](#)
 
 ---
 
-## 🌟 Features
+## 🌟 Key Features
 
-### 🎯 **Core Learning Management**
-- **📚 Comprehensive Course Catalog** - Browse arbitration, mediation, commercial law, and compliance courses
-- **🛤️ Structured Learning Paths** - Organized by CIMA membership levels (Associate, Member, Fellow)
-- **🆓 Free Introductory Course** - 30-minute introduction to dispute resolution
-- **🎥 Video Content Delivery** - Interactive video learning with progress tracking
-- **📝 Assessment System** - Quizzes, assignments, and knowledge checks
-- **🏆 Certification Management** - Automated certificate generation and verification
+### 🎯 **Complete Learning Management System**
+- **📚 Comprehensive Course Catalog** - Arbitration, mediation, commercial law, maritime disputes, sports arbitration
+- **🏆 CIMA Certification Paths** - Associate (ACIMArb), Member (MCIMArb), Fellow (FCIMArb) level courses
+- **🎥 Interactive Video Learning** - High-quality video content with progress tracking
+- **📝 Assessment & Testing** - Comprehensive quiz system with automatic scoring and feedback
+- **🏅 Certificate Generation** - Automated digital certificates with verification codes
+- **📊 Progress Analytics** - Detailed learning analytics and completion tracking
 
-### 🔍 **Advanced Discovery & Search**
-- **🔎 Intelligent Search** - Main search bar with real-time filtering
-- **⚡ Advanced Filters** - Price ranges, languages, quality ratings (4.5+ stars)
-- **🏷️ Category Navigation** - Browse by subject areas and specializations
-- **⭐ Quality Indicators** - Highest rated, most popular, recently updated
+### 👥 **Role-Based User Management**
+- **🔐 Advanced Authentication** - Email/password, Google OAuth, enhanced security
+- **👨‍🎓 Student Portal** - Course browsing, enrollment, progress tracking, shopping cart
+- **👨‍🏫 Instructor Dashboard** - Course creation, student management, analytics, revenue tracking
+- **⚙️ Admin Panel** - User management, course approval, platform analytics, instructor applications
+- **📋 Professional Profiles** - CIMA membership levels, professional credentials, learning preferences
 
-### 👤 **User Management & Authentication**
-- **🔐 Secure Authentication** - Email/password and Google OAuth integration
-- **📋 Enhanced User Profiles** - Professional information, CIMA membership levels
-- **📊 Progress Dashboard** - Learning analytics and achievement tracking
-- **💼 Professional Networking** - Connect with industry professionals
-
-### 💳 **Payment & Enrollment**
-- **🏦 Paystack Integration** - Support for cards and mobile money (MTN, Airtel, 9mobile)
-- **💰 Flexible Pricing** - Free courses, tiered pricing, and membership discounts
-- **📜 Enrollment Management** - Automatic course access after payment
-- **🧾 Payment History** - Transaction records and receipt management
+### 💳 **Payment & Commerce**
+- **🏦 Paystack Integration** - Cards, bank transfer, USSD, mobile money (MTN, Airtel, 9mobile)
+- **🛒 Shopping Cart System** - Bulk course purchases with discounts
+- **💰 Flexible Pricing** - Free courses, tiered pricing, membership-based discounts
+- **🧾 Payment Management** - Transaction history, receipts, enrollment automation
+- **🔄 Subscription Support** - Recurring payments for premium content
 
 ### 🌍 **Multi-Language & Accessibility**
-- **🗣️ 9 Language Support** - Including Arabic RTL support
-- **📱 Responsive Design** - Optimized for mobile, tablet, and desktop
-- **♿ Accessibility** - WCAG compliant design principles
-- **🎨 Professional Branding** - CIMA's signature red color scheme
+- **🗣️ 9 Language Support** - English, Arabic (RTL), French, Spanish, Portuguese, Chinese, Japanese, Korean, Russian
+- **📱 Responsive Design** - Mobile-first approach with tablet and desktop optimization
+- **♿ WCAG Compliance** - Accessibility features for inclusive learning
+- **🎨 Professional Branding** - CIMA's signature red color scheme and modern UI
 
 ---
 
-## 🏗️ Architecture
+## 🏗️ Technical Architecture
 
-### **Frontend**
-- **Flutter Web** - Cross-platform framework with Material 3 design
-- **Responsive UI** - Adaptive layouts for all screen sizes
-- **State Management** - Provider pattern for efficient state handling
+### **Frontend Framework**
+- **Flutter Web 3.32.0** - Modern cross-platform framework with Material 3 design
+- **Responsive UI System** - Adaptive layouts for all screen sizes
+- **Provider State Management** - Efficient state handling across the application
+- **Progressive Web App** - Offline capability and native-like experience
 
-### **Backend**
-- **Supabase** - PostgreSQL database with real-time capabilities
-- **Authentication** - Supabase Auth with social login support
-- **Row Level Security** - Secure data access controls
-- **File Storage** - Course materials and user-generated content
+### **Backend Infrastructure**
+- **Supabase PostgreSQL** - Scalable database with real-time capabilities
+- **Row Level Security** - Fine-grained access control and data protection
+- **Supabase Auth** - Secure authentication with social login support
+- **File Storage** - Course materials, certificates, and user-generated content
 
 ### **Payment Processing**
-- **Paystack** - Nigerian payment gateway with comprehensive options
-- **Webhook Integration** - Automatic enrollment after successful payment
-- **Security** - PCI compliant payment processing
+- **Paystack Gateway** - Nigerian-focused payment processing with global support
+- **Webhook Integration** - Automatic enrollment and subscription management
+- **PCI Compliance** - Secure payment handling and data protection
+- **Multi-Currency Support** - Local and international payment options
 
-### **Deployment**
-- **Replit Hosting** - Development and staging environment
+### **Deployment & Hosting**
+- **Replit Platform** - Development and staging environment
 - **Flutter Web Build** - Optimized static web deployment
-- **CDN Ready** - Optimized for content delivery networks
+- **CDN Ready** - Prepared for content delivery network deployment
+- **Autoscale Deployment** - Production-ready scaling configuration
 
 ---
 
-## 🚀 Quick Start
+## 🚀 Quick Start Guide
 
 ### Prerequisites
-- [Flutter SDK](https://flutter.dev/docs/get-started/install) (3.x or higher)
-- [Dart](https://dart.dev/get-dart) (3.x or higher)
-- [Git](https://git-scm.com/) for version control
+- [Flutter SDK](https://flutter.dev/docs/get-started/install) 3.32.0 or higher
+- [Dart](https://dart.dev/get-dart) 3.8.0 or higher
+- Web browser (Chrome, Firefox, Safari, Edge)
 
-### Installation
+### Environment Setup
 
-1. **Clone the repository**
+1. **Clone the Repository**
 ```bash
-git clone https://github.com/FredrickDickson/cima_learn_hub.git
-cd cima_learn_hub
+git clone https://github.com/your-repo/cima-learn.git
+cd cima-learn
 ```
 
-2. **Install dependencies**
+2. **Install Dependencies**
 ```bash
 flutter pub get
 ```
 
-3. **Set up environment variables**
+3. **Configure Environment Variables**
 Create a `.env` file in the root directory:
 ```bash
-SUPABASE_URL=your_supabase_url
+# Supabase Configuration
+SUPABASE_URL=https://pgmtaemwcueobaexthaq.supabase.co
 SUPABASE_KEY=your_supabase_anon_key
-PAYSTACK_PUBLIC_KEY=your_paystack_public_key
-PAYSTACK_SECRET_KEY=your_paystack_secret_key
+
+# Paystack Payment Integration
+PAYSTACK_PUBLIC_KEY=pk_test_your_public_key
+PAYSTACK_SECRET_KEY=sk_test_your_secret_key
 ```
 
-4. **Run the application**
+4. **Database Setup**
+Run these SQL commands in your Supabase SQL Editor:
+```sql
+-- Add missing columns to profiles table
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS learning_preferences text[];
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS profession text;
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS organization text;
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS phone_number text;
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS country text;
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS bio text;
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS role text DEFAULT 'student';
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS cima_membership_level text DEFAULT 'associate';
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS display_name text;
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS user_id uuid REFERENCES auth.users(id);
+
+-- Update existing records
+UPDATE profiles SET 
+  role = COALESCE(role, 'student'),
+  cima_membership_level = COALESCE(cima_membership_level, 'associate'),
+  learning_preferences = COALESCE(learning_preferences, '{}');
+```
+
+5. **Run the Application**
 ```bash
-# Development mode
+# Development server
 flutter run -d web-server --web-hostname 0.0.0.0 --web-port 5000
 
 # Production build
-flutter build web --dart-define=SUPABASE_KEY=$SUPABASE_KEY
+flutter build web --dart-define=SUPABASE_KEY=$SUPABASE_KEY --release
 ```
 
-5. **Access the application**
+6. **Access the Platform**
 Open your browser to `http://localhost:5000`
 
 ---
@@ -119,192 +144,235 @@ Open your browser to `http://localhost:5000`
 
 ```
 lib/
-├── config/                 # Configuration files
-│   ├── app_theme.dart     # Material 3 theme configuration
-│   ├── app_routes.dart    # Route definitions
-│   └── supabase_config.dart # Database configuration
+├── config/                     # Application configuration
+│   ├── app_theme.dart         # Material 3 theme and styling
+│   ├── app_routes.dart        # Route definitions and navigation
+│   └── supabase_config.dart   # Database configuration
 │
 ├── src/
-│   ├── models/            # Data models
-│   │   ├── course.dart    # Course data structure
-│   │   ├── user.dart      # User profile model
-│   │   └── enrollment.dart # Enrollment tracking
+│   ├── models/                # Data models and structures
+│   │   ├── course.dart        # Course data model
+│   │   ├── cima_course.dart   # CIMA-specific course extensions
+│   │   ├── user_profile.dart  # User profile and preferences
+│   │   ├── course_module.dart # Course content structure
+│   │   └── quiz_models.dart   # Assessment and quiz models
 │   │
-│   ├── screens/           # Main application screens
-│   │   ├── home_page.dart           # Homepage with course discovery
-│   │   ├── learning_paths_page.dart # Learning path selection
-│   │   ├── free_intro_course_page.dart # Free introductory course
-│   │   ├── course_detail_page.dart  # Individual course details
-│   │   ├── login_page.dart         # Authentication
-│   │   └── profile_page.dart       # User profile management
+│   ├── screens/               # Main application screens
+│   │   ├── home_page.dart              # Landing page and course discovery
+│   │   ├── course_detail_page.dart     # Individual course information
+│   │   ├── login_page.dart             # Authentication interface
+│   │   ├── profile_page.dart           # User profile management
+│   │   ├── instructor_dashboard.dart   # Instructor course management
+│   │   ├── admin_dashboard.dart        # Platform administration
+│   │   ├── cart_page.dart              # Shopping cart and checkout
+│   │   └── learning_progress_page.dart # Progress tracking
 │   │
-│   ├── widgets/           # Reusable UI components
-│   │   ├── hero_section.dart       # Homepage hero banner
-│   │   ├── course_card.dart        # Course display cards
-│   │   ├── search_bar_widget.dart  # Main search functionality
-│   │   ├── course_filters_widget.dart # Advanced filtering
-│   │   ├── enrollment_button.dart  # Payment integration
-│   │   └── header.dart            # Navigation header
+│   ├── widgets/               # Reusable UI components
+│   │   ├── header.dart                 # Navigation header with role-based menus
+│   │   ├── course_card.dart            # Course display cards
+│   │   ├── enrollment_button.dart      # Payment and enrollment integration
+│   │   ├── quiz_widget.dart            # Assessment interface
+│   │   ├── video_player_widget.dart    # Course content delivery
+│   │   └── responsive_layout.dart      # Responsive design utilities
 │   │
-│   ├── services/          # Business logic and API calls
-│   │   ├── course_service.dart     # Course data management
-│   │   ├── auth_service.dart       # User authentication
-│   │   ├── paystack_service.dart   # Payment processing
-│   │   └── localization_service.dart # Multi-language support
+│   ├── services/              # Business logic and API integration
+│   │   ├── enhanced_auth_service.dart      # Authentication and user management
+│   │   ├── course_service.dart             # Course data management
+│   │   ├── instructor_service.dart         # Instructor-specific functionality
+│   │   ├── admin_service.dart              # Administrative operations
+│   │   ├── paystack_service.dart           # Payment processing
+│   │   ├── cart_service.dart               # Shopping cart management
+│   │   ├── quiz_service.dart               # Assessment and testing
+│   │   └── enhanced_localization_service.dart # Multi-language support
 │   │
-│   └── utils/             # Helper functions and utilities
-│       ├── responsive.dart        # Responsive design utilities
-│       └── constants.dart         # App-wide constants
+│   └── utils/                 # Helper functions and utilities
+│       ├── constants.dart     # Application constants
+│       ├── responsive.dart    # Responsive design helpers
+│       └── validators.dart    # Form validation utilities
 │
-└── main.dart              # Application entry point
+├── assets/                    # Static assets
+│   ├── images/               # Course images and branding
+│   ├── videos/               # Course content videos
+│   └── documents/            # PDF materials and certificates
+│
+└── main.dart                 # Application entry point
 ```
 
 ---
 
-## 🔧 Configuration
+## 🎯 User Workflows
 
-### Environment Setup
+### **Student Journey**
+1. **Registration** → Email verification and profile completion
+2. **Course Discovery** → Browse catalog with advanced filtering
+3. **Free Trial** → Access introductory course content
+4. **Purchase** → Secure payment via Paystack integration
+5. **Learning** → Video content, quizzes, and progress tracking
+6. **Assessment** → Comprehensive testing with instant feedback
+7. **Certification** → Automated certificate generation and verification
 
-The application requires several environment variables for full functionality:
+### **Instructor Journey**
+1. **Application** → Apply for instructor status with qualifications
+2. **Approval** → Admin review and verification process
+3. **Course Creation** → Comprehensive course builder with content upload
+4. **Student Management** → Track enrollments and engagement
+5. **Analytics** → Revenue tracking and performance metrics
+6. **Content Updates** → Ongoing course maintenance and improvements
 
-```bash
-# Supabase Configuration
-SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_KEY=your-anon-public-key
-
-# Paystack Payment Integration
-PAYSTACK_PUBLIC_KEY=pk_test_your-public-key
-PAYSTACK_SECRET_KEY=sk_test_your-secret-key
-
-# Optional: Analytics and Monitoring
-GOOGLE_ANALYTICS_ID=your-ga-id
-```
-
-### Database Setup
-
-The application uses Supabase PostgreSQL with the following key tables:
-- `courses` - Course information and metadata
-- `users` - User profiles and authentication
-- `enrollments` - Course enrollment tracking
-- `payments` - Payment transaction records
-- `progress` - Learning progress and completion
+### **Admin Journey**
+1. **User Management** → Oversee all platform users and roles
+2. **Instructor Approval** → Review and approve instructor applications
+3. **Course Oversight** → Approve and manage all course content
+4. **Platform Analytics** → Monitor usage, revenue, and growth metrics
+5. **System Configuration** → Manage platform settings and features
 
 ---
 
-## 💻 Development
+## 🛠️ Development & Deployment
 
-### Running Locally
-
+### **Local Development**
 ```bash
-# Start development server
+# Install dependencies
+flutter pub get
+
+# Run development server
 flutter run -d web-server --web-hostname 0.0.0.0 --web-port 5000
 
 # Run tests
 flutter test
 
-# Generate build files
-flutter build web --release
+# Code formatting
+dart format lib/
+
+# Static analysis
+flutter analyze
 ```
 
-### Code Standards
-
-- **Dart Style Guide** - Follow official Dart style conventions
-- **Widget Organization** - Separate widgets into reusable components
-- **State Management** - Use Provider for state management
-- **Error Handling** - Implement comprehensive error handling
-- **Security** - Never commit API keys or sensitive data
-
----
-
-## 🌐 Deployment
-
-### Production Build
-
+### **Production Deployment**
 ```bash
 # Create optimized build
 flutter build web --dart-define=SUPABASE_KEY=$SUPABASE_KEY --release
 
-# Deploy to static hosting
-# Files will be in build/web/
+# Deploy static files from build/web/
+# Compatible with: Vercel, Netlify, Firebase Hosting, GitHub Pages
 ```
 
-### Supported Platforms
-
-- ✅ **Web Browsers** - Chrome, Firefox, Safari, Edge
-- ✅ **Mobile Web** - iOS Safari, Android Chrome
-- ✅ **Desktop** - Windows, macOS, Linux (via web)
-- 🔄 **Native Mobile** - iOS/Android (planned)
+### **Replit Configuration**
+The project includes Replit-specific configuration:
+- **Deployment Target**: Autoscale (stateless web application)
+- **Build Command**: `flutter build web --dart-define=SUPABASE_KEY=$SUPABASE_KEY`
+- **Run Command**: `python3 flutter_server.py` (serves on port 5000)
 
 ---
 
-## 🎯 User Journey
+## 🔧 Configuration & Environment Variables
 
-1. **Discovery** → Landing page with hero section and course preview
-2. **Free Trial** → "Start Learning Today" leads to free introductory course
-3. **Path Selection** → "Explore Courses" leads to structured learning paths
-4. **Course Selection** → Advanced search and filtering for course discovery
-5. **Enrollment** → Secure Paystack payment with mobile money support
-6. **Learning** → Interactive video content with progress tracking
-7. **Assessment** → Quizzes and assignments with automated scoring
-8. **Certification** → Automated certificate generation upon completion
+### **Required Environment Variables**
+```bash
+# Database Configuration
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_KEY=your_supabase_anon_key
+
+# Payment Processing
+PAYSTACK_PUBLIC_KEY=pk_test_your_public_key
+PAYSTACK_SECRET_KEY=sk_test_your_secret_key
+
+# Optional Analytics
+GOOGLE_ANALYTICS_ID=your_google_analytics_id
+```
+
+### **Database Schema**
+The application uses PostgreSQL with these key tables:
+- **`profiles`** - User profiles with CIMA membership levels
+- **`courses`** - Course catalog with metadata and content
+- **`enrollments`** - Student course enrollments and progress
+- **`payments`** - Payment transactions and history
+- **`quizzes`** - Assessment questions and results
+- **`certificates`** - Generated certificates with verification
 
 ---
 
 ## 🤝 Contributing
 
-We welcome contributions from the community! Please follow these steps:
+We welcome contributions from the educational technology and dispute resolution communities!
 
-1. **Fork the repository**
-2. **Create a feature branch** (`git checkout -b feature/amazing-feature`)
-3. **Commit your changes** (`git commit -m 'Add amazing feature'`)
-4. **Push to the branch** (`git push origin feature/amazing-feature`)
-5. **Open a Pull Request**
+### **How to Contribute**
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-### Development Guidelines
-
+### **Development Guidelines**
 - Follow Dart and Flutter best practices
-- Write tests for new functionality
+- Maintain responsive design across all devices
+- Write comprehensive tests for new features
 - Update documentation for significant changes
-- Ensure responsive design across all devices
-- Test payment integration thoroughly
+- Ensure payment integration security
+- Test multi-language support
 
 ---
 
-## 📄 License
+## 📄 License & Legal
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
----
-
-## 👨‍💻 Author
-
-**Fredrick Kwesi Poku Dickson**
-- 🌐 [GitHub](https://github.com/FredrickDickson)
-- 💼 Full-Stack Engineer specializing in Flutter and educational technology
-- 📧 Contact for collaboration opportunities
+### **Third-Party Acknowledgments**
+- **Flutter Framework** - Google's UI toolkit
+- **Supabase** - Backend-as-a-service platform
+- **Paystack** - Payment processing for African markets
+- **Material Design** - Google's design system
 
 ---
 
-## 🙏 Acknowledgments
+## 👨‍💻 Author & Support
 
-- **CIMA (Chartered Institute of Arbitrators)** - For educational content and professional guidance
-- **Flutter Team** - For the excellent cross-platform framework
-- **Supabase** - For backend-as-a-service infrastructure
-- **Paystack** - For seamless payment processing in African markets
-- **Open Source Community** - For the amazing packages and tools
+**Developer**: Professional Flutter developer specializing in educational technology
+**Support**: For technical support and collaboration opportunities
+**Community**: Join our developer community for updates and discussions
 
----
-
-## 📊 Project Stats
-
-- **Languages**: Dart, JavaScript, HTML, CSS
-- **Framework**: Flutter 3.x
-- **Database**: PostgreSQL (via Supabase)
-- **Payment Gateway**: Paystack
-- **Deployment**: Web (Replit)
-- **License**: MIT
-- **Status**: Production Ready
+### **Professional Services**
+- Custom e-learning platform development
+- Flutter web application consulting
+- Payment integration implementation
+- Multi-language platform localization
 
 ---
 
-*Built with ❤️ for the global dispute resolution community*
+## 📊 Project Metrics
+
+- **Languages**: Dart (95%), JavaScript (3%), HTML/CSS (2%)
+- **Framework**: Flutter 3.32.0 with Material 3
+- **Database**: PostgreSQL with Supabase
+- **Payment Gateway**: Paystack for African markets
+- **Deployment**: Web-first with mobile responsive design
+- **Status**: Production-ready with active development
+- **License**: MIT (open source)
+
+---
+
+## 🎯 Roadmap & Future Features
+
+### **Phase 1 - Current** ✅
+- Complete learning management system
+- Role-based user management
+- Payment processing integration
+- Multi-language support
+
+### **Phase 2 - In Development** 🔄
+- Native mobile applications (iOS/Android)
+- Advanced analytics dashboard
+- Live virtual classroom integration
+- AI-powered course recommendations
+
+### **Phase 3 - Planned** 📋
+- Blockchain certificate verification
+- VR/AR training modules
+- Advanced proctoring system
+- Global payment gateway expansion
+
+---
+
+*Built with ❤️ for the global dispute resolution and legal education community*
+
+**Ready to transform legal education? Start learning today!**
