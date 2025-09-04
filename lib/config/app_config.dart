@@ -9,7 +9,7 @@ class AppConfig {
   
   static const String supabaseKey = String.fromEnvironment(
     'SUPABASE_KEY',
-    defaultValue: '',
+    defaultValue: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBnbXRhZW13Y3Vlb2JhZXh0aGFxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY4NTcwMDcsImV4cCI6MjA3MjQzMzAwN30.UleVbd7A9Fu8ceNgsJdi0Vc226IT0AuhJv7bH-3I4QI',
   );
 
   // Paystack Payment Configuration
