@@ -1,18 +1,5 @@
 const String supabaseUrl = 'https://pgmtaemwcueobaexthaq.supabase.co';
-
-// Web-compatible approach: We'll check for environment variables at runtime
-// and fall back to offline mode if not available
-String get supabaseAnonKey {
-  // Try to get from compile-time environment first
-  const compileTimeKey = String.fromEnvironment('SUPABASE_KEY', defaultValue: '');
-  if (compileTimeKey.isNotEmpty) {
-    return compileTimeKey;
-  }
-  
-  // For now, we'll use a placeholder that allows the app to work in demo mode
-  // In a real production setup, you'd inject this differently
-  return '';
-}
+const String supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBnbXRhZW13Y3Vlb2JhZXh0aGFxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY4NTcwMDcsImV4cCI6MjA3MjQzMzAwN30.UleVbd7A9Fu8ceNgsJdi0Vc226IT0AuhJv7bH-3I4QI';
 
 // Add a flag to check if we're in offline/demo mode
 bool get isOfflineMode => supabaseAnonKey.isEmpty;
