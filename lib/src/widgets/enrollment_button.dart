@@ -281,8 +281,8 @@ class _EnrollmentButtonState extends State<EnrollmentButton> {
     );
   }
 
-  void _addToCart(CartService cartService) {
-    final added = cartService.addToCart(widget.course);
+  void _addToCart(CartService cartService) async {
+    final added = await cartService.addToCart(widget.course);
     if (added) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

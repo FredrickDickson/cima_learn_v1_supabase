@@ -1,0 +1,61 @@
+Step 2: Set Up Course Creation Workflow
+
+Once authenticated, you have two paths:
+Path A: Quick Admin Setup (Fastest)
+
+If you want to start adding courses immediately:
+
+    Access your Supabase database directly:
+        Go to your Supabase project dashboard
+        Navigate to Table Editor → profiles table
+        Find your user record and change the role field from 'student' to 'admin'
+
+    Access Admin Dashboard:
+        Refresh your app and you'll see admin navigation options
+        You can now create courses directly or approve instructor applications
+
+Path B: Proper Instructor Workflow (Recommended)
+
+This follows the intended platform flow:
+
+    Apply to become an Instructor:
+        From your student dashboard, find the "Apply to become Instructor" option
+        Fill out the application with your qualifications and experience
+        Submit the application
+
+    Approve your own application (since you're the platform owner):
+        Change your role to 'admin' in the database (as described above)
+        Go to Admin Dashboard → Instructor Applications
+        Approve your own instructor application
+        Your role will be updated to 'instructor'
+
+    Create courses through Instructor Dashboard:
+        Access the Instructor Dashboard
+        Use "Create New Course" feature
+        Fill in course details, pricing, content, etc.
+
+Step 3: Add Your First Course
+
+Once you have instructor access:
+
+    Course Basic Info:
+        Title (e.g., "Introduction to Commercial Arbitration")
+        Description and learning outcomes
+        CIMA membership level (Associate, Member, Fellow)
+        Category (Arbitration, Mediation, Commercial Law, etc.)
+
+    Course Content:
+        Upload videos, documents, or create text content
+        Add quizzes and assessments
+        Set course duration and structure
+
+    Pricing and Availability:
+        Set course price
+        Define prerequisites if any
+        Publish the course
+
+Which Path Do You Want to Take?
+
+I'd recommend Path B (proper workflow) if you want to experience how the platform works for real users, or Path A (admin setup) if you just want to quickly populate the platform with courses for testing.
+
+Would you like me to walk you through either of these approaches in more detail?

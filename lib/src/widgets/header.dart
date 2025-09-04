@@ -119,9 +119,8 @@ class Header extends StatelessWidget {
                     }
                   },
                   itemBuilder: (BuildContext context) {
-                    return Consumer<EnhancedAuthService>(
-                      builder: (context, auth, child) {
-                        List<PopupMenuItem<String>> items = [];
+                    final auth = Provider.of<EnhancedAuthService>(context);
+                    List<PopupMenuItem<String>> items = [];
 
                         if (auth.isAuthenticated) {
                           // Authenticated user menu items
@@ -216,9 +215,7 @@ class Header extends StatelessWidget {
                           ),
                         ]);
 
-                        return items;
-                      },
-                    );
+                    return items;
                   },
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),

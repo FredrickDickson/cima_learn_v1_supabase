@@ -120,18 +120,23 @@ class InstructorService extends ChangeNotifier {
   Future<void> loadCourseAnalytics(String instructorId) async {
     _setLoading(true);
     try {
-      // Get enrollment stats
-      final enrollmentsResponse = await _supabase
-          .from('enrollments')
-          .select('course_id, created_at, payment_reference')
-          .in_('course_id', _myCourses.map((c) => c.id).toList());
+      // Get enrollment stats  
+      final courseIds = _myCourses.map((c) => c.id).toList();
+      final enrollmentsResponse = courseIds.isNotEmpty
+          ? await _supabase
+              .from('enrollments')
+              .select('course_id, created_at, payment_reference')
+              .filter('course_id', 'in', '(${courseIds.map((id) => "'$id'").join(',')})')
+          : <Map<String, dynamic>>[];
 
       // Get payment stats
-      final paymentsResponse = await _supabase
-          .from('payments')
-          .select('amount, status, created_at')
-          .eq('status', 'completed')
-          .in_('course_id', _myCourses.map((c) => c.id).toList());
+      final paymentsResponse = courseIds.isNotEmpty
+          ? await _supabase
+              .from('payments')
+              .select('amount, status, created_at')
+              .eq('status', 'completed')
+              .filter('course_id', 'in', '(${courseIds.map((id) => "'$id'").join(',')})')
+          : <Map<String, dynamic>>[];
 
       // Calculate analytics
       final totalEnrollments = enrollmentsResponse.length;

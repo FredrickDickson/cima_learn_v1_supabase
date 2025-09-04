@@ -1,0 +1,203 @@
+Package file_picker:linux references file_picker:linux as the default plugin,
+but it does not provide an inline implementation.
+Ask the maintainers of file_picker to either avoid referencing a default
+implementation via `platforms: linux: default_package: file_picker` or add an
+inline implementation to file_picker via `platforms: linux:` `pluginClass` or
+`dartPluginClass`.
+
+
+Package file_picker:macos references file_picker:macos as the default plugin,
+but it does not provide an inline implementation.
+Ask the maintainers of file_picker to either avoid referencing a default
+implementation via `platforms: macos: default_package: file_picker` or add an
+inline implementation to file_picker via `platforms: macos:` `pluginClass` or
+`dartPluginClass`.
+
+
+Package file_picker:windows references file_picker:windows as the default
+plugin, but it does not provide an inline implementation.
+Ask the maintainers of file_picker to either avoid referencing a default
+implementation via `platforms: windows: default_package: file_picker` or add an
+inline implementation to file_picker via `platforms: windows:` `pluginClass` or
+`dartPluginClass`.
+
+
+Package file_picker:linux references file_picker:linux as the default plugin,
+but it does not provide an inline implementation.
+Ask the maintainers of file_picker to either avoid referencing a default
+implementation via `platforms: linux: default_package: file_picker` or add an
+inline implementation to file_picker via `platforms: linux:` `pluginClass` or
+`dartPluginClass`.
+
+
+Package file_picker:macos references file_picker:macos as the default plugin,
+but it does not provide an inline implementation.
+Ask the maintainers of file_picker to either avoid referencing a default
+implementation via `platforms: macos: default_package: file_picker` or add an
+inline implementation to file_picker via `platforms: macos:` `pluginClass` or
+`dartPluginClass`.
+
+
+Package file_picker:windows references file_picker:windows as the default
+plugin, but it does not provide an inline implementation.
+Ask the maintainers of file_picker to either avoid referencing a default
+implementation via `platforms: windows: default_package: file_picker` or add an
+inline implementation to file_picker via `platforms: windows:` `pluginClass` or
+`dartPluginClass`.
+
+
+Package file_picker:linux references file_picker:linux as the default plugin,
+but it does not provide an inline implementation.
+Ask the maintainers of file_picker to either avoid referencing a default
+implementation via `platforms: linux: default_package: file_picker` or add an
+inline implementation to file_picker via `platforms: linux:` `pluginClass` or
+`dartPluginClass`.
+
+
+Package file_picker:macos references file_picker:macos as the default plugin,
+but it does not provide an inline implementation.
+Ask the maintainers of file_picker to either avoid referencing a default
+implementation via `platforms: macos: default_package: file_picker` or add an
+inline implementation to file_picker via `platforms: macos:` `pluginClass` or
+`dartPluginClass`.
+
+
+Package file_picker:windows references file_picker:windows as the default
+plugin, but it does not provide an inline implementation.
+Ask the maintainers of file_picker to either avoid referencing a default
+implementation via `platforms: windows: default_package: file_picker` or add an
+inline implementation to file_picker via `platforms: windows:` `pluginClass` or
+`dartPluginClass`.
+
+
+Package file_picker:linux references file_picker:linux as the default plugin,
+but it does not provide an inline implementation.
+Ask the maintainers of file_picker to either avoid referencing a default
+implementation via `platforms: linux: default_package: file_picker` or add an
+inline implementation to file_picker via `platforms: linux:` `pluginClass` or
+`dartPluginClass`.
+
+
+Package file_picker:macos references file_picker:macos as the default plugin,
+but it does not provide an inline implementation.
+Ask the maintainers of file_picker to either avoid referencing a default
+implementation via `platforms: macos: default_package: file_picker` or add an
+inline implementation to file_picker via `platforms: macos:` `pluginClass` or
+`dartPluginClass`.
+
+
+Package file_picker:windows references file_picker:windows as the default
+plugin, but it does not provide an inline implementation.
+Ask the maintainers of file_picker to either avoid referencing a default
+implementation via `platforms: windows: default_package: file_picker` or add an
+inline implementation to file_picker via `platforms: windows:` `pluginClass` or
+`dartPluginClass`.
+
+
+Launching lib/main.dart on Linux in debug mode...
+ERROR: lib/src/widgets/header.dart:219:32: Error: A value of type 'List<PopupMenuItem<String>>' can't be returned from a function with return type 'Widget'.
+ERROR:  - 'List' is from 'dart:core'.
+ERROR:  - 'PopupMenuItem' is from 'package:flutter/src/material/popup_menu.dart' ('/nix/store/i07crp4mg1rimd97s1byrq4gasg7dsk5-flutter-wrapped-3.32.0-sdk-links/packages/flutter/lib/src/material/popup_menu.dart').
+ERROR:  - 'Widget' is from 'package:flutter/src/widgets/framework.dart' ('/nix/store/i07crp4mg1rimd97s1byrq4gasg7dsk5-flutter-wrapped-3.32.0-sdk-links/packages/flutter/lib/src/widgets/framework.dart').
+ERROR:                         return items;
+ERROR:                                ^
+ERROR: lib/src/widgets/header.dart:122:28: Error: A value of type 'Consumer<EnhancedAuthService>' can't be returned from a function with return type 'List<PopupMenuEntry<String>>'.
+ERROR:  - 'Consumer' is from 'package:provider/src/consumer.dart' ('../.pub-cache/hosted/pub.dev/provider-6.1.5+1/lib/src/consumer.dart').
+ERROR:  - 'EnhancedAuthService' is from 'package:cima_learn/src/services/enhanced_auth_service.dart' ('lib/src/services/enhanced_auth_service.dart').
+ERROR:  - 'List' is from 'dart:core'.
+ERROR:  - 'PopupMenuEntry' is from 'package:flutter/src/material/popup_menu.dart' ('/nix/store/i07crp4mg1rimd97s1byrq4gasg7dsk5-flutter-wrapped-3.32.0-sdk-links/packages/flutter/lib/src/material/popup_menu.dart').
+ERROR:                     return Consumer<EnhancedAuthService>(
+ERROR:                            ^
+ERROR: lib/src/widgets/course_card.dart:200:29: Error: No named parameter with the name 'imageUrl'.
+ERROR:                             imageUrl: course.image,
+ERROR:                             ^^^^^^^^
+ERROR: lib/src/models/cima_course.dart:33:3: Context: Found this candidate, but the arguments don't match.
+ERROR:   CIMACourse({
+ERROR:   ^^^^^^^^^^
+ERROR: lib/src/services/instructor_service.dart:127:12: Error: The method 'in_' isn't defined for the class 'PostgrestFilterBuilder<List<Map<String, dynamic>>>'.
+ERROR:  - 'PostgrestFilterBuilder' is from 'package:postgrest/src/postgrest_builder.dart' ('../.pub-cache/hosted/pub.dev/postgrest-2.4.2/lib/src/postgrest_builder.dart').
+ERROR:  - 'List' is from 'dart:core'.
+ERROR:  - 'Map' is from 'dart:core'.
+ERROR: Try correcting the name to the name of an existing method, or defining a method named 'in_'.
+ERROR:           .in_('course_id', _myCourses.map((c) => c.id).toList());
+ERROR:            ^^^
+ERROR: lib/src/services/instructor_service.dart:134:12: Error: The method 'in_' isn't defined for the class 'PostgrestFilterBuilder<List<Map<String, dynamic>>>'.
+ERROR:  - 'PostgrestFilterBuilder' is from 'package:postgrest/src/postgrest_builder.dart' ('../.pub-cache/hosted/pub.dev/postgrest-2.4.2/lib/src/postgrest_builder.dart').
+ERROR:  - 'List' is from 'dart:core'.
+ERROR:  - 'Map' is from 'dart:core'.
+ERROR: Try correcting the name to the name of an existing method, or defining a method named 'in_'.
+ERROR:           .in_('course_id', _myCourses.map((c) => c.id).toList());
+ERROR:            ^^^
+ERROR: lib/src/screens/instructor_analytics_page.dart:321:42: Error: The getter 'enrollmentCount' isn't defined for the class 'Course'.
+ERROR:  - 'Course' is from 'package:cima_learn/src/models/course.dart' ('lib/src/models/course.dart').
+ERROR: Try correcting the name to the name of an existing getter, or defining a getter or field named 'enrollmentCount'.
+ERROR:                     DataCell(Text(course.enrollmentCount.toString())),
+ERROR:                                          ^^^^^^^^^^^^^^^
+ERROR: lib/src/screens/instructor_analytics_page.dart:322:62: Error: The getter 'enrollmentCount' isn't defined for the class 'Course'.
+ERROR:  - 'Course' is from 'package:cima_learn/src/models/course.dart' ('lib/src/models/course.dart').
+ERROR: Try correcting the name to the name of an existing getter, or defining a getter or field named 'enrollmentCount'.
+ERROR:                     DataCell(Text('₦${(course.price * course.enrollmentCount).toStringAsFixed(0)}')),
+ERROR:                                                              ^^^^^^^^^^^^^^^
+ERROR: lib/src/screens/instructor_analytics_page.dart:337:57: Error: The getter 'status' isn't defined for the class 'Course'.
+ERROR:  - 'Course' is from 'package:cima_learn/src/models/course.dart' ('lib/src/models/course.dart').
+ERROR: Try correcting the name to the name of an existing getter, or defining a getter or field named 'status'.
+ERROR:                           color: _getStatusColor(course.status ?? 'draft').withOpacity(0.1),
+ERROR:                                                         ^^^^^^
+ERROR: lib/src/screens/instructor_analytics_page.dart:341:35: Error: The getter 'status' isn't defined for the class 'Course'.
+ERROR:  - 'Course' is from 'package:cima_learn/src/models/course.dart' ('lib/src/models/course.dart').
+ERROR: Try correcting the name to the name of an existing getter, or defining a getter or field named 'status'.
+ERROR:                           (course.status ?? 'draft').toUpperCase(),
+ERROR:                                   ^^^^^^
+ERROR: lib/src/screens/instructor_analytics_page.dart:343:59: Error: The getter 'status' isn't defined for the class 'Course'.
+ERROR:  - 'Course' is from 'package:cima_learn/src/models/course.dart' ('lib/src/models/course.dart').
+ERROR: Try correcting the name to the name of an existing getter, or defining a getter or field named 'status'.
+ERROR:                             color: _getStatusColor(course.status ?? 'draft'),
+ERROR:                                                           ^^^^^^
+ERROR: lib/src/screens/instructor_courses_page.dart:80:109: Error: The getter 'status' isn't defined for the class 'Course'.
+ERROR:  - 'Course' is from 'package:cima_learn/src/models/course.dart' ('lib/src/models/course.dart').
+ERROR: Try correcting the name to the name of an existing getter, or defining a getter or field named 'status'.
+ERROR:       {'key': 'published', 'label': 'Published', 'count': widget.instructorService.myCourses.where((c) => c.status == 'published').length},
+ERROR:                                                                                                             ^^^^^^
+ERROR: lib/src/screens/instructor_courses_page.dart:81:101: Error: The getter 'status' isn't defined for the class 'Course'.
+ERROR:  - 'Course' is from 'package:cima_learn/src/models/course.dart' ('lib/src/models/course.dart').
+ERROR: Try correcting the name to the name of an existing getter, or defining a getter or field named 'status'.
+ERROR:       {'key': 'draft', 'label': 'Draft', 'count': widget.instructorService.myCourses.where((c) => c.status == 'draft').length},
+ERROR:                                                                                                     ^^^^^^
+ERROR: lib/src/screens/instructor_courses_page.dart:82:112: Error: The getter 'status' isn't defined for the class 'Course'.
+ERROR:  - 'Course' is from 'package:cima_learn/src/models/course.dart' ('lib/src/models/course.dart').
+ERROR: Try correcting the name to the name of an existing getter, or defining a getter or field named 'status'.
+ERROR:       {'key': 'pending', 'label': 'Pending Review', 'count': widget.instructorService.myCourses.where((c) => c.status == 'pending_approval').length},
+ERROR:                                                                                                                ^^^^^^
+ERROR: lib/src/screens/instructor_courses_page.dart:408:49: Error: The getter 'status' isn't defined for the class 'Course'.
+ERROR:  - 'Course' is from 'package:cima_learn/src/models/course.dart' ('lib/src/models/course.dart').
+ERROR: Try correcting the name to the name of an existing getter, or defining a getter or field named 'status'.
+ERROR:         return service.myCourses.where((c) => c.status == 'published').toList();
+ERROR:                                                 ^^^^^^
+ERROR: lib/src/screens/instructor_courses_page.dart:410:49: Error: The getter 'status' isn't defined for the class 'Course'.
+ERROR:  - 'Course' is from 'package:cima_learn/src/models/course.dart' ('lib/src/models/course.dart').
+ERROR: Try correcting the name to the name of an existing getter, or defining a getter or field named 'status'.
+ERROR:         return service.myCourses.where((c) => c.status == 'draft').toList();
+ERROR:                                                 ^^^^^^
+ERROR: lib/src/screens/instructor_courses_page.dart:412:49: Error: The getter 'status' isn't defined for the class 'Course'.
+ERROR:  - 'Course' is from 'package:cima_learn/src/models/course.dart' ('lib/src/models/course.dart').
+ERROR: Try correcting the name to the name of an existing getter, or defining a getter or field named 'status'.
+ERROR:         return service.myCourses.where((c) => c.status == 'pending_approval').toList();
+ERROR:                                                 ^^^^^^
+ERROR: lib/src/services/paystack_service.dart:281:39: Error: A value of type 'Map<String, dynamic>' can't be assigned to a variable of type 'String'.
+ERROR:  - 'Map' is from 'dart:core'.
+ERROR:         updateData['paystack_data'] = paystackData;
+ERROR:                                       ^
+ERROR: lib/src/widgets/paystack_payment_widget.dart:187:34: Error: Member not found: 'ResponsivePadding.all'.
+ERROR:       padding: ResponsivePadding.all(context),
+ERROR:                                  ^^^
+ERROR: lib/src/widgets/paystack_payment_widget.dart:266:42: Error: Member not found: 'ResponsiveFontSize.heading4'.
+ERROR:             fontSize: ResponsiveFontSize.heading4(context),
+ERROR:                                          ^^^^^^^^
+ERROR: lib/src/widgets/enrollment_button.dart:286:9: Error: A value of type 'Future<bool>' can't be assigned to a variable of type 'bool'.
+ERROR:  - 'Future' is from 'dart:async'.
+ERROR:     if (added) {
+ERROR:         ^
+ERROR: Target kernel_snapshot_program failed: Exception
+Building Linux application...                                           
+Error: Build process failed
+~/workspace$ 

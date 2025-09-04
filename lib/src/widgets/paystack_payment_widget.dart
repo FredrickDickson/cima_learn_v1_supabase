@@ -184,7 +184,7 @@ class _PaystackPaymentWidgetState extends State<PaystackPaymentWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: ResponsivePadding.all(context),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -254,7 +254,7 @@ class _PaystackPaymentWidgetState extends State<PaystackPaymentWidget> {
         Text(
           'Course Enrollment',
           style: TextStyle(
-            fontSize: ResponsiveFontSize.heading3(context),
+            fontSize: 20,
             fontWeight: FontWeight.bold,
             color: const Color(0xFFB71C1C),
           ),
@@ -263,7 +263,7 @@ class _PaystackPaymentWidgetState extends State<PaystackPaymentWidget> {
         Text(
           widget.course.title,
           style: TextStyle(
-            fontSize: ResponsiveFontSize.heading4(context),
+            fontSize: 18,
             fontWeight: FontWeight.w600,
           ),
         ),

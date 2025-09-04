@@ -18,6 +18,8 @@ class Course {
   final String language;
   final String? videoUrl;
   final List<String> modules;
+  final String? status;
+  final int? enrollmentCount;
 
   Course({
     required this.id,
@@ -39,6 +41,8 @@ class Course {
     this.language = 'en',
     this.videoUrl,
     this.modules = const [],
+    this.status,
+    this.enrollmentCount,
   });
 
   // Factory method to create Course from JSON
@@ -63,6 +67,8 @@ class Course {
       language: json['language'] as String? ?? 'en',
       videoUrl: json['video_url'] as String?,
       modules: List<String>.from(json['modules'] ?? []),
+      status: json['status'] as String?,
+      enrollmentCount: json['enrollment_count'] as int? ?? json['student_count'] as int?,
     );
   }
 
@@ -88,6 +94,8 @@ class Course {
       'language': language,
       'video_url': videoUrl,
       'modules': modules,
+      'status': status,
+      'enrollment_count': enrollmentCount,
     };
   }
 

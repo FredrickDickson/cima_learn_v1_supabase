@@ -278,7 +278,7 @@ class PaystackService {
       };
 
       if (paystackData != null) {
-        updateData['paystack_data'] = paystackData;
+        updateData['paystack_data'] = paystackData as dynamic;
         if (status == 'success') {
           updateData['completed_at'] = DateTime.now().toIso8601String();
         }

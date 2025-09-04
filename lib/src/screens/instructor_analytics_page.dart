@@ -318,8 +318,8 @@ class _InstructorAnalyticsPageState extends State<InstructorAnalyticsPage> {
                         ),
                       ),
                     ),
-                    DataCell(Text(course.enrollmentCount.toString())),
-                    DataCell(Text('₦${(course.price * course.enrollmentCount).toStringAsFixed(0)}')),
+                    DataCell(Text((course.enrollmentCount ?? 0).toString())),
+                    DataCell(Text('₦${(course.price * (course.enrollmentCount ?? 0)).toStringAsFixed(0)}')),
                     DataCell(
                       Row(
                         children: [
