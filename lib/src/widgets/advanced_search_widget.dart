@@ -4,12 +4,10 @@ import '../utils/responsive.dart';
 
 class AdvancedSearchWidget extends StatefulWidget {
   final Function(Map<String, dynamic>) onFiltersChanged;
-  final bool isEnrolledCoursesOnly;
 
   const AdvancedSearchWidget({
     Key? key,
     required this.onFiltersChanged,
-    this.isEnrolledCoursesOnly = false,
   }) : super(key: key);
 
   @override
@@ -91,9 +89,7 @@ class _AdvancedSearchWidgetState extends State<AdvancedSearchWidget> {
               controller: _searchController,
               onChanged: (_) => _applyFilters(),
               decoration: InputDecoration(
-                hintText: widget.isEnrolledCoursesOnly 
-                    ? 'Search for courses enrolled...' 
-                    : 'Search all courses, instructors, topics...',
+                hintText: 'search for courses enrolled...',
                 prefixIcon: const Icon(Icons.search, color: Color(0xFFB71C1C)),
                 suffixIcon: _searchController.text.isNotEmpty
                     ? IconButton(
