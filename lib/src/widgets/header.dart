@@ -5,6 +5,7 @@ import '../screens/terms_of_service_page.dart';
 import '../screens/profile_page.dart';
 import '../screens/progress_dashboard.dart';
 import 'course_search_delegate.dart';
+import 'theme_switcher_widget.dart';
 
 class Header extends StatelessWidget {
   final bool isMobile;
@@ -84,6 +85,7 @@ class Header extends StatelessWidget {
                   onPressed: () {},
                   color: Theme.of(context).colorScheme.onSurface,
                 ),
+                ThemeSwitcherWidget(showLabel: false),
                 PopupMenuButton<String>(
                   onSelected: (String value) {
                     switch (value) {

@@ -92,7 +92,7 @@ class ProgressService {
     double? overallScore,
   }) async {
     try {
-      final updateData = {
+      final updateData = <String, dynamic>{
         'last_accessed_at': DateTime.now().toIso8601String(),
       };
 
