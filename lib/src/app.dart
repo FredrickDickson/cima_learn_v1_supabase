@@ -11,6 +11,8 @@ import 'screens/signup_page.dart';
 import 'screens/enrolled_courses_page.dart';
 import 'screens/not_found_page.dart';
 import 'screens/onboarding_screen.dart';
+import 'screens/learning_paths_page.dart';
+import 'screens/free_intro_course_page.dart';
 
 class CimaLearnApp extends StatefulWidget {
   const CimaLearnApp({super.key});
@@ -133,6 +135,8 @@ class _CimaLearnAppState extends State<CimaLearnApp> {
               '/signup': (context) => const SignupPage(),
               '/enrolled-courses': (context) => const EnrolledCoursesPage(),
               '/onboarding': (context) => const OnboardingScreen(),
+              '/learning-paths': (context) => const LearningPathsPage(),
+              '/free-intro-course': (context) => const FreeIntroCourse(),
             },
             onUnknownRoute: (settings) => MaterialPageRoute(
               builder: (context) => const NotFoundPage(),

@@ -9,6 +9,7 @@ import '../widgets/course_categories.dart';
 import '../widgets/course_card.dart';
 import '../widgets/footer.dart';
 import '../widgets/search_bar_widget.dart';
+import '../widgets/course_filters_widget.dart';
 import '../models/course.dart';
 import '../../config/supabase_config.dart';
 
@@ -28,6 +29,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   late Animation<double> _fadeAnimation;
   final EnhancedCourseService _courseService = EnhancedCourseService();
   String _searchQuery = '';
+  Map<String, dynamic> _activeFilters = {};
   List<Course> _allCourses = [];
   List<Course> _filteredCourses = [];
 
@@ -83,14 +85,64 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     _performSearch();
   }
 
+  void _handleFiltersChanged(Map<String, dynamic> filters) {
+    setState(() {
+      _activeFilters = filters;
+    });
+    _performSearch();
+  }
+
   Future<void> _performSearch() async {
     final courses = await _courseService.searchCourses(
       query: _searchQuery.isEmpty ? null : _searchQuery,
       category: activeCategory == 'all' ? null : activeCategory,
     );
+    
+    List<Course> filteredCourses = courses;
+    
+    // Apply custom filters
+    if (_activeFilters.isNotEmpty) {
+      filteredCourses = _applyFilters(filteredCourses);
+    }
+    
     setState(() {
-      _filteredCourses = courses;
+      _filteredCourses = filteredCourses;
     });
+  }
+
+  List<Course> _applyFilters(List<Course> courses) {
+    List<Course> filtered = List.from(courses);
+    
+    // Price filters
+    if (_activeFilters.containsKey('price_free')) {
+      filtered = filtered.where((course) => course.price == 0).toList();
+    } else if (_activeFilters.containsKey('price_under_50k')) {
+      filtered = filtered.where((course) => course.price < 50000).toList();
+    } else if (_activeFilters.containsKey('price_50k_200k')) {
+      filtered = filtered.where((course) => course.price >= 50000 && course.price <= 200000).toList();
+    } else if (_activeFilters.containsKey('price_over_200k')) {
+      filtered = filtered.where((course) => course.price > 200000).toList();
+    }
+    
+    // Quality filters
+    if (_activeFilters.containsKey('quality_top_rated')) {
+      filtered = filtered.where((course) => course.rating >= 4.5).toList();
+    } else if (_activeFilters.containsKey('quality_popular')) {
+      filtered = filtered.where((course) => course.isPopular).toList();
+    }
+    
+    // Language filters (assuming courses have a language property)
+    if (_activeFilters.containsKey('lang_en')) {
+      // Filter for English courses
+    } else if (_activeFilters.containsKey('lang_fr')) {
+      // Filter for French courses  
+    } else if (_activeFilters.containsKey('lang_ar')) {
+      // Filter for Arabic courses
+    } else if (_activeFilters.containsKey('lang_es')) {
+      // Filter for Spanish courses
+    }
+    
+    return filtered;
   }
 
   @override
@@ -198,6 +250,11 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                   onSearchChanged: _handleSearchChange,
                   initialQuery: _searchQuery,
                 ),
+              ),
+              // Course Filters
+              CourseFiltersWidget(
+                onFiltersChanged: _handleFiltersChanged,
+                initialFilters: _activeFilters,
               ),
               const SizedBox(height: 24),
               CourseCategories(

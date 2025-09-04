@@ -41,21 +41,29 @@ class HeroSection extends StatelessWidget {
                 runSpacing: 12,
                 alignment: WrapAlignment.center,
                 children: [
-                  ElevatedButton(
-                    onPressed: () {},
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/free-intro-course');
+                    },
+                    icon: const Icon(Icons.play_arrow),
+                    label: const Text('Start Learning Today'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
                       foregroundColor: Theme.of(context).colorScheme.primary,
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                     ),
-                    child: const Text('Start Learning Today'),
                   ),
-                  OutlinedButton(
-                    onPressed: () {},
+                  OutlinedButton.icon(
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/learning-paths');
+                    },
+                    icon: const Icon(Icons.explore),
+                    label: const Text('Explore Courses'),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: Colors.white,
                       side: const BorderSide(color: Colors.white),
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                     ),
-                    child: const Text('Explore Courses'),
                   ),
                 ],
               ),
