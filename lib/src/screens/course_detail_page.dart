@@ -5,6 +5,7 @@ import '../services/auth_service.dart';
 import '../services/enrollment_service.dart';
 import '../services/localization_service.dart';
 import '../widgets/loading_widget.dart';
+import 'progress_dashboard.dart';
 
 class CourseDetailPage extends StatefulWidget {
   final Course course;

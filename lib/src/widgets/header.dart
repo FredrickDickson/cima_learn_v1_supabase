@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../utils/responsive.dart';
 import '../screens/privacy_policy_page.dart';
 import '../screens/terms_of_service_page.dart';
+import '../screens/profile_page.dart';
+import '../screens/progress_dashboard.dart';
 import 'course_search_delegate.dart';
 
 class Header extends StatelessWidget {
@@ -85,6 +87,18 @@ class Header extends StatelessWidget {
                 PopupMenuButton<String>(
                   onSelected: (String value) {
                     switch (value) {
+                      case 'profile':
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const ProfilePage()),
+                        );
+                        break;
+                      case 'progress':
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const ProgressDashboard()),
+                        );
+                        break;
                       case 'login':
                         Navigator.pushNamed(context, '/login');
                         break;
@@ -103,6 +117,22 @@ class Header extends StatelessWidget {
                     }
                   },
                   itemBuilder: (BuildContext context) => [
+                    const PopupMenuItem<String>(
+                      value: 'profile',
+                      child: ListTile(
+                        leading: Icon(Icons.person),
+                        title: Text('My Profile'),
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                    ),
+                    const PopupMenuItem<String>(
+                      value: 'progress',
+                      child: ListTile(
+                        leading: Icon(Icons.trending_up),
+                        title: Text('Learning Progress'),
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                    ),
                     const PopupMenuItem<String>(
                       value: 'login',
                       child: ListTile(
