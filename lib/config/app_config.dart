@@ -45,12 +45,13 @@ class AppConfig {
   static bool get isPaystackConfigured => 
       paystackPublicKey.isNotEmpty && paystackSecretKey.isNotEmpty;
 
-  // Configuration validation
+  // Configuration validation - graceful handling for development
   static void validateConfig() {
-    assert(isSupabaseConfigured, 'Supabase configuration is missing');
-    
+    if (!isSupabaseConfigured) {
+      print('⚠ Warning: Supabase configuration missing. Please set SUPABASE_URL and SUPABASE_KEY environment variables.');
+    }
     if (!isPaystackConfigured) {
-      print('Warning: Paystack configuration is missing. Payment features will not work.');
+      print('⚠ Warning: Paystack configuration missing. Payment features will not work.');
     }
   }
 }

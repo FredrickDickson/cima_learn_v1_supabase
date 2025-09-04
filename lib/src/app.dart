@@ -130,7 +130,7 @@ class _CimaLearnAppState extends State<CimaLearnApp> {
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
             themeMode: themeProvider.themeMode,
-            home: _isOnboardingCompleted ? const HomePage() : const OnboardingScreen(),
+            initialRoute: _isOnboardingCompleted ? '/' : '/onboarding',
             routes: {
               '/': (context) => const HomePage(),
               '/login': (context) => const LoginPage(),
