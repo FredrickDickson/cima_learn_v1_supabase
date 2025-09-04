@@ -1,24 +1,45 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/course.dart';
-import '../services/course_service.dart';
+import '../models/cima_course.dart';
+import '../utils/responsive.dart';
+import 'enrollment_button.dart';
 
 class CourseCard extends StatelessWidget {
   final Course course;
-  final CourseService _courseService = CourseService();
 
-  CourseCard({super.key, required this.course});
+  const CourseCard({super.key, required this.course});
 
-  Future<void> _enroll(BuildContext context) async {
-    try {
-      await _courseService.enrollCourse(course.id);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Enrolled in ${course.title}!')),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error enrolling: $e')),
-      );
+  // Helper method to map string level to CIMALevel enum
+  CIMALevel _mapToLevel(String level) {
+    switch (level.toLowerCase()) {
+      case 'associate':
+        return CIMALevel.associate;
+      case 'member':
+        return CIMALevel.member;
+      case 'fellow':
+        return CIMALevel.fellow;
+      default:
+        return CIMALevel.associate;
+    }
+  }
+
+  // Helper method to map string category to CourseCategory enum
+  CourseCategory _mapToCategory(String category) {
+    switch (category.toLowerCase()) {
+      case 'arbitration':
+        return CourseCategory.arbitration;
+      case 'mediation':
+        return CourseCategory.mediation;
+      case 'commercial-law':
+      case 'commercial_law':
+        return CourseCategory.commercial;
+      case 'compliance':
+        return CourseCategory.commercial;
+      case 'corporate-disputes':
+      case 'corporate_disputes':
+        return CourseCategory.construction;
+      default:
+        return CourseCategory.adr;
     }
   }
 
@@ -168,13 +189,22 @@ class CourseCard extends StatelessWidget {
                               ),
                           ],
                         ),
-                        ElevatedButton(
-                          onPressed: () => _enroll(context),
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                            textStyle: const TextStyle(fontSize: 14),
+                        EnrollmentButton(
+                          course: CIMACourse(
+                            id: course.id,
+                            title: course.title,
+                            description: course.description,
+                            instructor: course.instructor,
+                            price: course.price,
+                            rating: course.rating,
+                            imageUrl: course.image,
+                            duration: int.tryParse(course.duration.replaceAll(RegExp(r'[^0-9]'), '')) ?? 8,
+                            level: _mapToLevel(course.level),
+                            category: _mapToCategory(course.category),
+                            sessionCount: 4,
+                            deliveryMode: 'virtual',
+                            certificationOffered: 'Certificate of Completion',
                           ),
-                          child: const Text('Enroll'),
                         ),
                       ],
                     ),
