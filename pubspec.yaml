@@ -18,6 +18,12 @@ dependencies:
   file_picker: ^6.1.1
   intl: ^0.19.0
   google_sign_in: ^6.2.1
+  video_player: ^2.8.1
+  better_player: ^0.0.84
+  path_provider: ^2.1.1
+  dio: ^5.3.2
+  video_thumbnail: ^0.5.3
+  ffmpeg_kit_flutter: ^6.0.3
 
 dev_dependencies:
   flutter_test:

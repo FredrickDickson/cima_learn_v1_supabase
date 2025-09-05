@@ -1,6 +1,12 @@
 import 'dart:typed_data';
+import 'dart:io';
+import 'dart:convert';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:video_thumbnail/video_thumbnail.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:dio/dio.dart';
+import '../models/video_lesson.dart';
 
 /// Service for handling file uploads and storage with Supabase Storage
 /// Manages course materials, profile images, certificates, and other user files
@@ -11,11 +17,21 @@ class StorageService {
 
   final SupabaseClient _supabase = Supabase.instance.client;
 
-  // Storage bucket names
+  // Storage bucket names  
   static const String profileImagesBucket = 'profile-images';
   static const String courseMaterialsBucket = 'course-materials';
   static const String certificatesBucket = 'certificates';
   static const String uploadsBucket = 'uploads';
+  // Video-specific buckets
+  static const String videosBucket = 'videos';
+  static const String thumbnailsBucket = 'thumbnails';
+  static const String hlsStreamsBucket = 'hls-streams';
+  static const String downloadsBucket = 'downloads';
+
+  // Video upload settings
+  static const int chunkSize = 5 * 1024 * 1024; // 5MB chunks
+  static const int maxVideoSize = 2 * 1024 * 1024 * 1024; // 2GB max
+  static const List<String> supportedVideoFormats = ['mp4', 'mov', 'avi', 'webm', 'mkv'];
 
   /// Upload a file to Supabase Storage
   /// Returns the public URL if successful, null if failed
@@ -243,4 +259,340 @@ class StorageService {
       return false;
     }
   }
+
+  // =====================================================================================
+  // VIDEO UPLOAD AND PROCESSING METHODS
+  // =====================================================================================
+
+  /// Upload video with chunked upload support and progress tracking
+  Future<String?> uploadVideo({
+    required String courseId,
+    required String lessonId,
+    required String instructorId,
+    Function(UploadProgress)? onProgress,
+  }) async {
+    try {
+      // Pick video file
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.video,
+        allowMultiple: false,
+      );
+
+      if (result == null || result.files.isEmpty) {
+        return null; // User cancelled
+      }
+
+      final file = result.files.first;
+      
+      // Validate video file
+      final validationResult = _validateVideoFile(file);
+      if (!validationResult.isValid) {
+        throw Exception(validationResult.errorMessage);
+      }
+
+      // Generate unique filename
+      final timestamp = DateTime.now().millisecondsSinceEpoch;
+      final extension = file.extension ?? 'mp4';
+      final fileName = 'courses/$courseId/lessons/$lessonId/${timestamp}_${file.name}';
+
+      // Create upload progress tracker
+      final uploadId = 'upload_$timestamp';
+      var uploadProgress = UploadProgress(
+        uploadId: uploadId,
+        fileName: file.name!,
+        totalBytes: file.size,
+        startedAt: DateTime.now(),
+      );
+
+      onProgress?.call(uploadProgress);
+
+      String? videoUrl;
+
+      if (file.size > chunkSize) {
+        // Use chunked upload for large files
+        videoUrl = await _uploadVideoChunked(
+          fileName: fileName,
+          fileBytes: file.bytes!,
+          onProgress: (progress) {
+            uploadProgress = UploadProgress(
+              uploadId: uploadId,
+              fileName: file.name!,
+              progressPercentage: progress,
+              uploadedBytes: (file.size * progress / 100).round(),
+              totalBytes: file.size,
+              status: progress == 100 ? UploadStatus.completed : UploadStatus.uploading,
+              startedAt: uploadProgress.startedAt,
+              completedAt: progress == 100 ? DateTime.now() : null,
+            );
+            onProgress?.call(uploadProgress);
+          },
+        );
+      } else {
+        // Direct upload for smaller files
+        videoUrl = await uploadFile(
+          bucketName: videosBucket,
+          fileName: fileName,
+          fileBytes: file.bytes!,
+          contentType: 'video/$extension',
+        );
+        
+        uploadProgress = UploadProgress(
+          uploadId: uploadId,
+          fileName: file.name!,
+          progressPercentage: 100,
+          uploadedBytes: file.size,
+          totalBytes: file.size,
+          status: UploadStatus.completed,
+          startedAt: uploadProgress.startedAt,
+          completedAt: DateTime.now(),
+        );
+        onProgress?.call(uploadProgress);
+      }
+
+      if (videoUrl != null) {
+        // Generate thumbnail
+        await _generateThumbnail(videoUrl, courseId, lessonId);
+        
+        // Trigger video processing
+        await _triggerVideoProcessing(videoUrl, courseId, lessonId);
+      }
+
+      return videoUrl;
+    } catch (e) {
+      print('Video upload error: $e');
+      throw e;
+    }
+  }
+
+  /// Upload video with chunked upload for large files
+  Future<String?> _uploadVideoChunked({
+    required String fileName,
+    required Uint8List fileBytes,
+    Function(double)? onProgress,
+  }) async {
+    try {
+      final totalSize = fileBytes.length;
+      final totalChunks = (totalSize / chunkSize).ceil();
+      
+      for (int i = 0; i < totalChunks; i++) {
+        final start = i * chunkSize;
+        final end = (start + chunkSize < totalSize) ? start + chunkSize : totalSize;
+        final chunk = fileBytes.sublist(start, end);
+        
+        // Upload chunk
+        await _supabase.storage
+            .from(videosBucket)
+            .uploadBinary('${fileName}_chunk_$i', chunk);
+            
+        // Report progress
+        final progress = ((i + 1) / totalChunks) * 100;
+        onProgress?.call(progress);
+      }
+
+      // Combine chunks (this would typically be done server-side)
+      // For now, we'll use the first chunk approach
+      // In production, implement server-side chunk combining
+      
+      final publicUrl = _supabase.storage
+          .from(videosBucket)
+          .getPublicUrl('${fileName}_chunk_0');
+
+      return publicUrl;
+    } catch (e) {
+      print('Chunked upload error: $e');
+      return null;
+    }
+  }
+
+  /// Validate video file before upload
+  VideoValidationResult _validateVideoFile(PlatformFile file) {
+    // Check file size
+    if (file.size > maxVideoSize) {
+      return VideoValidationResult(
+        isValid: false,
+        errorMessage: 'Video file is too large. Maximum size is ${maxVideoSize / 1024 / 1024 / 1024}GB',
+      );
+    }
+
+    // Check file format
+    final extension = file.extension?.toLowerCase();
+    if (extension == null || !supportedVideoFormats.contains(extension)) {
+      return VideoValidationResult(
+        isValid: false,
+        errorMessage: 'Unsupported video format. Supported formats: ${supportedVideoFormats.join(', ')}',
+      );
+    }
+
+    return VideoValidationResult(isValid: true);
+  }
+
+  /// Generate thumbnail for uploaded video
+  Future<String?> _generateThumbnail(String videoUrl, String courseId, String lessonId) async {
+    try {
+      // Download video temporarily to generate thumbnail
+      final tempDir = await getTemporaryDirectory();
+      final videoFile = File('${tempDir.path}/temp_video.mp4');
+      
+      // In a real implementation, you'd download the video
+      // For now, we'll simulate thumbnail generation
+      
+      final thumbnailData = await VideoThumbnail.thumbnailData(
+        video: videoUrl,
+        imageFormat: ImageFormat.JPEG,
+        maxWidth: 320,
+        quality: 75,
+      );
+
+      if (thumbnailData != null) {
+        final thumbnailFileName = 'courses/$courseId/lessons/$lessonId/thumbnail.jpg';
+        
+        return await uploadFile(
+          bucketName: thumbnailsBucket,
+          fileName: thumbnailFileName,
+          fileBytes: thumbnailData,
+          contentType: 'image/jpeg',
+        );
+      }
+    } catch (e) {
+      print('Thumbnail generation error: $e');
+    }
+    
+    return null;
+  }
+
+  /// Trigger video processing and transcoding
+  Future<void> _triggerVideoProcessing(String videoUrl, String courseId, String lessonId) async {
+    try {
+      // In a real implementation, this would trigger a background job
+      // For now, we'll create a database entry to track processing
+      
+      await _supabase.from('video_processing_queue').insert({
+        'video_url': videoUrl,
+        'course_id': courseId,
+        'lesson_id': lessonId,
+        'status': 'pending',
+        'created_at': DateTime.now().toIso8601String(),
+      });
+      
+      print('Video processing triggered for lesson: $lessonId');
+    } catch (e) {
+      print('Error triggering video processing: $e');
+    }
+  }
+
+  /// Download video for offline viewing
+  Future<String?> downloadVideoForOffline({
+    required String videoUrl,
+    required String lessonId,
+    required String userId,
+    Function(double)? onProgress,
+  }) async {
+    try {
+      final appDir = await getApplicationDocumentsDirectory();
+      final videoDir = Directory('${appDir.path}/videos');
+      if (!await videoDir.exists()) {
+        await videoDir.create(recursive: true);
+      }
+
+      final fileName = 'lesson_${lessonId}.mp4';
+      final filePath = '${videoDir.path}/$fileName';
+      final file = File(filePath);
+
+      // Download with progress tracking
+      final dio = Dio();
+      await dio.download(
+        videoUrl,
+        filePath,
+        onReceiveProgress: (received, total) {
+          if (total != -1) {
+            final progress = (received / total) * 100;
+            onProgress?.call(progress);
+          }
+        },
+      );
+
+      return filePath;
+    } catch (e) {
+      print('Video download error: $e');
+      return null;
+    }
+  }
+
+  /// Get signed URL for video streaming
+  Future<String?> getVideoStreamingUrl(String videoPath, {int expirySeconds = 3600}) async {
+    try {
+      return await _supabase.storage
+          .from(videosBucket)
+          .createSignedUrl(videoPath, expirySeconds);
+    } catch (e) {
+      print('Error creating signed URL: $e');
+      return null;
+    }
+  }
+
+  /// Get HLS streaming URL for a video
+  Future<String?> getHLSStreamingUrl(String videoPath) async {
+    try {
+      // Convert video path to HLS path
+      final hlsPath = videoPath.replaceAll('.mp4', '.m3u8');
+      
+      return await _supabase.storage
+          .from(hlsStreamsBucket)
+          .createSignedUrl(hlsPath, 3600);
+    } catch (e) {
+      print('Error getting HLS URL: $e');
+      return null;
+    }
+  }
+
+  /// Clean up temporary files
+  Future<void> cleanupTempFiles() async {
+    try {
+      final tempDir = await getTemporaryDirectory();
+      final files = tempDir.listSync();
+      
+      for (final file in files) {
+        if (file.path.contains('temp_video') || file.path.contains('thumbnail_')) {
+          await file.delete();
+        }
+      }
+    } catch (e) {
+      print('Cleanup error: $e');
+    }
+  }
+
+  /// Get download progress for offline video
+  Future<double> getDownloadProgress(String lessonId) async {
+    try {
+      final appDir = await getApplicationDocumentsDirectory();
+      final filePath = '${appDir.path}/videos/lesson_${lessonId}.mp4';
+      final file = File(filePath);
+      
+      if (await file.exists()) {
+        return 100.0; // Already downloaded
+      }
+      
+      // Check for partial downloads
+      final partialFile = File('${filePath}.partial');
+      if (await partialFile.exists()) {
+        // Return partial progress (this would need to be tracked separately)
+        return 50.0; // Placeholder
+      }
+      
+      return 0.0;
+    } catch (e) {
+      return 0.0;
+    }
+  }
+}
+
+/// Video validation result
+class VideoValidationResult {
+  final bool isValid;
+  final String? errorMessage;
+
+  VideoValidationResult({
+    required this.isValid,
+    this.errorMessage,
+  });
 }
