@@ -298,15 +298,17 @@ class PaystackService {
   // Generate unique payment reference
   String _generateReference(String courseId) {
     final timestamp = DateTime.now().millisecondsSinceEpoch;
-    final userId = _authService.userId.substring(0, 8);
-    return 'CIMA_${courseId}_${userId}_$timestamp';
+    final userId = _authService.userId;
+    final userPrefix = userId.isNotEmpty && userId.length >= 8 ? userId.substring(0, 8) : userId;
+    return 'CIMA_${courseId}_${userPrefix}_$timestamp';
   }
 
   String _generateBulkReference(List<String> courseIds) {
     final timestamp = DateTime.now().millisecondsSinceEpoch;
-    final userId = _authService.userId.substring(0, 8);
+    final userId = _authService.userId;
+    final userPrefix = userId.isNotEmpty && userId.length >= 8 ? userId.substring(0, 8) : userId;
     final courseHash = courseIds.join('_').hashCode.abs();
-    return 'BULK_CIMA_${courseHash}_${userId}_$timestamp';
+    return 'BULK_CIMA_${courseHash}_${userPrefix}_$timestamp';
   }
 
   Future<void> _createBulkPaymentRecord({
