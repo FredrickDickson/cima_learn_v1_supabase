@@ -97,6 +97,12 @@ class CourseModule {
   final Map<String, dynamic> metadata; // Additional module-specific data
   final DateTime createdAt;
   final DateTime updatedAt;
+  
+  // Enhanced fields for better functionality
+  final List<ModuleContent>? multiLanguageContent;
+  final VideoProgress? userProgress;
+  final bool isCompleted;
+  final double completionPercentage;
 
   CourseModule({
     required this.id,
@@ -112,6 +118,10 @@ class CourseModule {
     this.metadata = const {},
     required this.createdAt,
     required this.updatedAt,
+    this.multiLanguageContent,
+    this.userProgress,
+    this.isCompleted = false,
+    this.completionPercentage = 0.0,
   });
 
   factory CourseModule.fromJson(Map<String, dynamic> json) {
@@ -119,16 +129,26 @@ class CourseModule {
       id: json['id'],
       courseId: json['course_id'],
       title: json['title'],
-      description: json['description'],
+      description: json['description'] ?? '',
       orderIndex: json['order_index'],
       moduleType: json['module_type'],
       content: Map<String, String>.from(json['content'] ?? {}),
-      estimatedDurationMinutes: json['estimated_duration_minutes'],
+      estimatedDurationMinutes: json['estimated_duration_minutes'] ?? 30,
       prerequisites: List<String>.from(json['prerequisites'] ?? []),
       isRequired: json['is_required'] ?? true,
       metadata: Map<String, dynamic>.from(json['metadata'] ?? {}),
       createdAt: DateTime.parse(json['created_at']),
       updatedAt: DateTime.parse(json['updated_at']),
+      multiLanguageContent: json['module_content'] != null
+          ? (json['module_content'] as List)
+              .map((content) => ModuleContent.fromJson(content))
+              .toList()
+          : null,
+      userProgress: json['user_progress'] != null
+          ? VideoProgress.fromJson(json['user_progress'])
+          : null,
+      isCompleted: json['is_completed'] ?? false,
+      completionPercentage: (json['completion_percentage'] as num?)?.toDouble() ?? 0.0,
     );
   }
 
@@ -151,11 +171,77 @@ class CourseModule {
   }
 
   String? getContentForLanguage(String languageCode) {
+    // First check multi-language content
+    if (multiLanguageContent != null) {
+      for (final content in multiLanguageContent!) {
+        if (content.languageCode == languageCode && content.contentUrl != null) {
+          return content.contentUrl;
+        }
+      }
+    }
+    
+    // Fallback to legacy content map
     return content[languageCode] ?? content['en']; // Fallback to English
+  }
+
+  /// Get content for the user's preferred language with fallback
+  String? getLocalizedContentUrl(String preferredLanguage) {
+    return getContentForLanguage(preferredLanguage) ?? 
+           getContentForLanguage('en') ?? 
+           content.values.isNotEmpty ? content.values.first : null;
+  }
+
+  /// Check if module has content in a specific language
+  bool hasContentInLanguage(String languageCode) {
+    return getContentForLanguage(languageCode) != null;
+  }
+
+  /// Get available languages for this module
+  List<String> getAvailableLanguages() {
+    final languages = <String>{};
+    
+    // Add from multi-language content
+    if (multiLanguageContent != null) {
+      for (final content in multiLanguageContent!) {
+        languages.add(content.languageCode);
+      }
+    }
+    
+    // Add from legacy content map
+    languages.addAll(content.keys);
+    
+    return languages.toList();
   }
 
   bool get isVideo => moduleType == 'video';
   bool get isDocument => moduleType == 'document';
   bool get isQuiz => moduleType == 'quiz';
   bool get isLiveSession => moduleType == 'live_session';
+
+  /// Create a copy with updated progress
+  CourseModule copyWithProgress({
+    VideoProgress? userProgress,
+    bool? isCompleted,
+    double? completionPercentage,
+  }) {
+    return CourseModule(
+      id: id,
+      courseId: courseId,
+      title: title,
+      description: description,
+      orderIndex: orderIndex,
+      moduleType: moduleType,
+      content: content,
+      estimatedDurationMinutes: estimatedDurationMinutes,
+      prerequisites: prerequisites,
+      isRequired: isRequired,
+      metadata: metadata,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
+      multiLanguageContent: multiLanguageContent,
+      userProgress: userProgress ?? this.userProgress,
+      isCompleted: isCompleted ?? this.isCompleted,
+      completionPercentage: completionPercentage ?? this.completionPercentage,
+    );
+  }
 }
