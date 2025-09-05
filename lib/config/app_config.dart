@@ -1,10 +1,10 @@
 /// Centralized application configuration
 /// Following Flutter docs pattern - Supabase credentials are public with RLS protection
 class AppConfig {
-  // Supabase Configuration - Uses environment variables for best practices
+  // Supabase Configuration - Public values as per Flutter docs
   // These are safe to expose as Row Level Security protects the data
-  static const String supabaseUrl = String.fromEnvironment('SUPABASE_URL', defaultValue: 'https://pgmtaemwcueobaexthaq.supabase.co');
-  static const String supabaseKey = String.fromEnvironment('SUPABASE_ANON_KEY', defaultValue: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBnbXRhZW13Y3Vlb2JhZXh0aGFxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjU0NTk3NzcsImV4cCI6MjA0MTAzNTc3N30.Sfa7Z1UjmTkz5-rnUz4u_xTJ8oFI1EH45lJGaXqg_iY');
+  static const String supabaseUrl = 'https://pgmtaemwcueobaexthaq.supabase.co';
+  static const String supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBnbXRhZW13Y3Vlb2JhZXh0aGFxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjU0NTk3NzcsImV4cCI6MjA0MTAzNTc3N30.Sfa7Z1UjmTkz5-rnUz4u_xTJ8oFI1EH45lJGaXqg_iY';
 
   // Paystack Payment Configuration - Values come from environment only
   static const String paystackPublicKey = String.fromEnvironment('PAYSTACK_PUBLIC_KEY');
