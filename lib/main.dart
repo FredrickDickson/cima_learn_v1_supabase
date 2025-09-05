@@ -7,6 +7,10 @@ import 'src/providers/theme_provider.dart';
 import 'src/blocs/auth/auth_bloc.dart';
 import 'src/blocs/course/course_bloc.dart';
 import 'src/blocs/video/video_bloc.dart';
+import 'src/blocs/payment/payment_bloc.dart';
+import 'src/blocs/quiz/quiz_bloc.dart';
+import 'src/blocs/instructor/instructor_bloc.dart';
+import 'src/blocs/admin/admin_bloc.dart';
 import 'src/services/cart_service.dart';
 import 'src/services/instructor_service.dart';
 
@@ -30,10 +34,14 @@ Future<void> main() async {
         // Theme provider (keeping as Provider for now)
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         
-        // BLoC providers for main app state
+        // BLoC providers for comprehensive state management
         BlocProvider(create: (_) => AuthBloc()),
         BlocProvider(create: (_) => CourseBloc()),
         BlocProvider(create: (_) => VideoBloc()),
+        BlocProvider(create: (_) => PaymentBloc()),
+        BlocProvider(create: (_) => QuizBloc()),
+        BlocProvider(create: (_) => InstructorBloc()),
+        BlocProvider(create: (_) => AdminBloc()),
         
         // Legacy providers (will migrate these later)
         ChangeNotifierProvider(create: (_) => CartService()),
