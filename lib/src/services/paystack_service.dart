@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'enhanced_auth_service.dart';
 import '../../config/app_config.dart';
+import '../utils/validators.dart';
 
 class PaystackService {
   static final PaystackService _instance = PaystackService._internal();
@@ -27,17 +28,35 @@ class PaystackService {
     required String userEmail,
     Map<String, dynamic>? metadata,
   }) async {
-    // Input validation
-    if (courseId.isEmpty || courseName.isEmpty || userEmail.isEmpty) {
-      return PaymentResult.error('Invalid payment parameters');
+    // Comprehensive input validation
+    if (!Validators.isValidCourseId(courseId)) {
+      return PaymentResult.error('Invalid course ID format');
     }
 
-    if (amount <= 0) {
+    if (!Validators.isValidCourseTitle(courseName)) {
+      return PaymentResult.error('Invalid course name format');
+    }
+
+    if (!Validators.isValidEmail(userEmail)) {
+      return PaymentResult.error('Invalid email address');
+    }
+
+    if (!Validators.isValidAmount(amount)) {
       return PaymentResult.error('Invalid payment amount');
+    }
+
+    if (!Validators.isValidCurrency(currency)) {
+      return PaymentResult.error('Invalid currency code');
     }
 
     if (_secretKey.isEmpty) {
       return PaymentResult.error('Payment service not configured');
+    }
+
+    // Check for security patterns in inputs
+    if (SecurityUtils.containsSqlInjectionPattern(courseName) ||
+        SecurityUtils.containsXssPattern(courseName)) {
+      return PaymentResult.error('Invalid course name');
     }
 
     try {
@@ -55,7 +74,7 @@ class PaystackService {
           'amount': amountInKobo,
           'currency': currency.toUpperCase(),
           'reference': _generateReference(courseId),
-          'callback_url': 'https://cimalearning.com/payment/callback',
+          'callback_url': AppConfig.getPaymentCallbackUrl(),
           'metadata': {
             'course_id': courseId,
             'course_name': courseName,
@@ -124,7 +143,7 @@ class PaystackService {
           'amount': amountInKobo,
           'currency': currency.toUpperCase(),
           'reference': bulkReference,
-          'callback_url': 'https://cimalearning.com/payment/callback',
+          'callback_url': AppConfig.getPaymentCallbackUrl(),
           'metadata': {
             'course_ids': courseIds.join(','),
             'course_names': courseNames.join(', '),

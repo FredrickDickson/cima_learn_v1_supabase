@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../config/app_config.dart';
+import '../utils/validators.dart';
 
 class EnhancedAuthService extends ChangeNotifier {
   static final EnhancedAuthService _instance = EnhancedAuthService._internal();
@@ -135,6 +137,26 @@ class EnhancedAuthService extends ChangeNotifier {
     String? organization,
     String? country,
   }) async {
+    // Input validation with comprehensive security checks
+    final validationErrors = Validators.validateRegistrationForm(
+      fullName: fullName,
+      email: email,
+      password: password,
+      profession: profession,
+      organization: organization,
+    );
+
+    if (validationErrors.isNotEmpty) {
+      final firstError = validationErrors.values.first;
+      return AuthResult.error(firstError ?? 'Invalid input provided');
+    }
+
+    // Additional security checks
+    if (SecurityUtils.containsSqlInjectionPattern(fullName) ||
+        SecurityUtils.containsXssPattern(fullName)) {
+      return AuthResult.error('Invalid characters in name');
+    }
+
     _setLoading(true);
     _clearError();
 
@@ -220,7 +242,7 @@ class EnhancedAuthService extends ChangeNotifier {
     try {
       await _supabase.auth.signInWithOAuth(
         OAuthProvider.google,
-        redirectTo: 'https://cimalearning.com/auth/callback',
+        redirectTo: AppConfig.getAuthCallbackUrl(),
       );
       return AuthResult.success('Redirecting to Google...');
     } on AuthException catch (e) {
@@ -256,9 +278,14 @@ class EnhancedAuthService extends ChangeNotifier {
     _clearError();
 
     try {
+      // Validate email before sending reset
+      if (!Validators.isValidEmail(email.trim())) {
+        return AuthResult.error('Please enter a valid email address');
+      }
+
       await _supabase.auth.resetPasswordForEmail(
         email.trim(),
-        redirectTo: 'https://cimalearning.com/reset-password',
+        redirectTo: AppConfig.getPasswordResetUrl(),
       );
       return AuthResult.success('Password reset email sent!');
     } on AuthException catch (e) {
@@ -278,10 +305,35 @@ class EnhancedAuthService extends ChangeNotifier {
     _clearError();
 
     try {
+      // Sanitize all string inputs to prevent XSS
+      final sanitizedData = <String, dynamic>{};
+      for (final entry in profileData.entries) {
+        if (entry.value is String) {
+          sanitizedData[entry.key] = Validators.sanitizeInput(entry.value);
+        } else {
+          sanitizedData[entry.key] = entry.value;
+        }
+      }
+
+      // Additional validation for specific fields
+      if (sanitizedData.containsKey('full_name')) {
+        final fullName = sanitizedData['full_name'] as String;
+        if (!Validators.isValidName(fullName)) {
+          return AuthResult.error('Invalid name format');
+        }
+      }
+
+      if (sanitizedData.containsKey('email')) {
+        final email = sanitizedData['email'] as String;
+        if (!Validators.isValidEmail(email)) {
+          return AuthResult.error('Invalid email format');
+        }
+      }
+
       await _supabase
           .from('profiles')
           .update({
-            ...profileData,
+            ...sanitizedData,
             'updated_at': DateTime.now().toIso8601String(),
           })
           .eq('user_id', userId);

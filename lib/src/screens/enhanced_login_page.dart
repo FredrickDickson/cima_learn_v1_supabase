@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import '../services/auth_service.dart';
+import '../services/enhanced_auth_service.dart';
 import '../services/google_auth_service.dart';
 import '../services/localization_service.dart';
 import '../widgets/loading_widget.dart';
 import '../utils/responsive.dart';
+import '../utils/validators.dart';
 
 class EnhancedLoginPage extends StatefulWidget {
   const EnhancedLoginPage({Key? key}) : super(key: key);
@@ -18,7 +19,7 @@ class _EnhancedLoginPageState extends State<EnhancedLoginPage> with SingleTicker
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _nameController = TextEditingController();
-  final AuthService _authService = AuthService();
+  final EnhancedAuthService _authService = EnhancedAuthService();
   final GoogleAuthService _googleAuthService = GoogleAuthService();
   
   bool _isLoading = false;
@@ -284,6 +285,9 @@ class _EnhancedLoginPageState extends State<EnhancedLoginPage> with SingleTicker
                                     if (value == null || value.trim().isEmpty) {
                                       return 'Please enter your full name';
                                     }
+                                    if (!Validators.isValidName(value)) {
+                                      return 'Please enter a valid name (letters, spaces, hyphens only)';
+                                    }
                                     return null;
                                   },
                                 ),
@@ -308,8 +312,8 @@ class _EnhancedLoginPageState extends State<EnhancedLoginPage> with SingleTicker
                                   if (value == null || value.trim().isEmpty) {
                                     return 'Please enter your email';
                                   }
-                                  if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
-                                    return 'Please enter a valid email';
+                                  if (!Validators.isValidEmail(value)) {
+                                    return 'Please enter a valid email address';
                                   }
                                   return null;
                                 },
@@ -346,8 +350,8 @@ class _EnhancedLoginPageState extends State<EnhancedLoginPage> with SingleTicker
                                   if (value == null || value.isEmpty) {
                                     return 'Please enter your password';
                                   }
-                                  if (_isSignUp && value.length < 6) {
-                                    return 'Password must be at least 6 characters';
+                                  if (_isSignUp && !Validators.isStrongPassword(value)) {
+                                    return 'Password must be at least 8 characters with uppercase, lowercase, and digit';
                                   }
                                   return null;
                                 },

@@ -10,6 +10,10 @@ class AppConfig {
   static const String paystackPublicKey = String.fromEnvironment('PAYSTACK_PUBLIC_KEY');
   static const String paystackSecretKey = String.fromEnvironment('PAYSTACK_SECRET_KEY');
 
+  // App Domain Configuration - Makes URLs configurable for different environments
+  static const String appDomain = String.fromEnvironment('APP_DOMAIN', defaultValue: 'cimalearning.com');
+  static const String appProtocol = String.fromEnvironment('APP_PROTOCOL', defaultValue: 'https');
+
   // Application Configuration
   static const String appName = 'CIMA Learn';
   static const String appVersion = '1.0.0';
@@ -32,6 +36,11 @@ class AppConfig {
   static bool get isPaystackConfigured => 
       paystackPublicKey.isNotEmpty && paystackSecretKey.isNotEmpty;
 
+  // Dynamic URL generation for callbacks and redirects
+  static String getAuthCallbackUrl() => '$appProtocol://$appDomain/auth/callback';
+  static String getPasswordResetUrl() => '$appProtocol://$appDomain/reset-password';
+  static String getPaymentCallbackUrl() => '$appProtocol://$appDomain/payment/callback';
+
   // Configuration validation - graceful handling for development
   static void validateConfig() {
     if (!isSupabaseConfigured) {
@@ -39,6 +48,11 @@ class AppConfig {
     }
     if (!isPaystackConfigured) {
       print('⚠ Warning: Paystack configuration missing. Payment features will not work.');
+    }
+    
+    // Validate domain configuration
+    if (appDomain.isEmpty) {
+      print('⚠ Warning: APP_DOMAIN not configured. Using default domain.');
     }
   }
 }
