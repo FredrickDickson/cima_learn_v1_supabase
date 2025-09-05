@@ -2,8 +2,7 @@ import 'dart:typed_data';
 import 'dart:io';
 import 'dart:convert';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:video_thumbnail/video_thumbnail.dart';
+// File picker imports removed for web deployment compatibility
 import 'package:path_provider/path_provider.dart';
 import 'package:dio/dio.dart';
 import '../models/video_lesson.dart';

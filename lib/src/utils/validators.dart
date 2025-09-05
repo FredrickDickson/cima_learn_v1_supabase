@@ -12,6 +12,11 @@ class Validators {
     return regex.hasMatch(email);
   }
 
+  // Method alias for compatibility
+  static String? validateEmail(String email) {
+    return isValidEmail(email) ? null : 'Please enter a valid email address';
+  }
+
   // Strong password validation
   static bool isStrongPassword(String password) {
     if (password.length < 8) return false;
@@ -22,6 +27,16 @@ class Validators {
     final hasDigit = RegExp(r'[0-9]').hasMatch(password);
     
     return hasLowercase && hasUppercase && hasDigit;
+  }
+
+  // Method alias for compatibility
+  static String? validatePassword(String password) {
+    return isStrongPassword(password) ? null : 'Password must be at least 8 characters with uppercase, lowercase, and digit';
+  }
+
+  // Method alias for name validation
+  static String? validateName(String name) {
+    return isValidName(name) ? null : 'Please enter a valid name';
   }
 
   // Get password strength score (0-4)
@@ -347,7 +362,7 @@ class SecurityUtils {
     final patterns = [
       r'(\bUNION\b|\bSELECT\b|\bINSERT\b|\bUPDATE\b|\bDELETE\b|\bDROP\b)',
       r'(\bOR\b\s+\d+\s*=\s*\d+|\bAND\b\s+\d+\s*=\s*\d+)',
-      r"(\'|\\\";|\|\||&&)",
+      r"(\'|\\\\\";|\|\||&&)",
       r'(\bxp_|\bsp_|\bfn_)',
     ];
     

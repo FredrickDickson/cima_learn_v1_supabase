@@ -1,10 +1,11 @@
+import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../config/supabase_config.dart';
 import '../../models/user_profile.dart';
 import '../../utils/validators.dart';
 import 'auth_event.dart';
-import 'auth_state.dart';
+import 'auth_state.dart' as local_auth;
 
 /// Authentication BLoC managing user authentication and profile state
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
