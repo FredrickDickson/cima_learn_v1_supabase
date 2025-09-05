@@ -16,10 +16,12 @@ class CIMACourseService {
         instructor: 'CIMA Faculty Experts',
         price: 750.00,
         rating: 4.8,
-        imageUrl: 'assets/images/arbitration-london.jpg',
-        duration: 3, // 3 days
-        level: CIMALevel.associate,
-        category: CourseCategory.arbitration,
+        reviewCount: 150,
+        studentCount: 500,
+        image: 'assets/images/arbitration-london.jpg',
+        duration: '3 days',
+        cimaLevel: CIMALevel.associate,
+        courseCategory: CourseCategory.arbitration,
         sessionCount: 8,
         deliveryMode: 'hybrid',
         learningOutcomes: [
@@ -43,10 +45,12 @@ class CIMACourseService {
         instructor: 'Leading ADR Practitioners',
         price: 450.00,
         rating: 4.7,
-        imageUrl: 'assets/images/mediation-fundamentals.jpg',
-        duration: 2, // 2 days
-        level: CIMALevel.associate,
-        category: CourseCategory.adr,
+        reviewCount: 120,
+        studentCount: 350,
+        image: 'assets/images/mediation-fundamentals.jpg',
+        duration: '2 days',
+        cimaLevel: CIMALevel.associate,
+        courseCategory: CourseCategory.adr,
         sessionCount: 8,
         deliveryMode: 'hybrid',
         learningOutcomes: [
@@ -70,10 +74,12 @@ class CIMACourseService {
         instructor: 'International Arbitration Panel',
         price: 1200.00,
         rating: 4.9,
-        imageUrl: 'assets/images/commercial-law.jpg',
-        duration: 5, // 5 days
-        level: CIMALevel.member,
-        category: CourseCategory.commercial,
+        reviewCount: 200,
+        studentCount: 800,
+        image: 'assets/images/commercial-law.jpg',
+        duration: '5 days'
+        cimaLevel: CIMALevel.member,
+        courseCategory: CourseCategory.commercial,
         prerequisites: ['Basic understanding of arbitration principles'],
         sessionCount: 15,
         deliveryMode: 'hybrid',
@@ -97,10 +103,12 @@ class CIMACourseService {
         instructor: 'Construction Law Experts',
         price: 850.00,
         rating: 4.6,
-        imageUrl: 'assets/images/construction-dispute.jpg',
-        duration: 4, // 4 days
-        level: CIMALevel.member,
-        category: CourseCategory.construction,
+        reviewCount: 85,
+        studentCount: 300,
+        image: 'assets/images/construction-dispute.jpg',
+        duration: '4 days'
+        cimaLevel: CIMALevel.member,
+        courseCategory: CourseCategory.construction,
         sessionCount: 12,
         deliveryMode: 'hybrid',
         learningOutcomes: [
@@ -123,10 +131,12 @@ class CIMACourseService {
         instructor: 'Certified Mediation Professionals',
         price: 650.00,
         rating: 4.8,
-        imageUrl: 'assets/images/advanced-mediation.jpg',
-        duration: 3, // 3 days
-        level: CIMALevel.member,
-        category: CourseCategory.mediation,
+        reviewCount: 95,
+        studentCount: 250,
+        image: 'assets/images/advanced-mediation.jpg',
+        duration: '3 days'
+        cimaLevel: CIMALevel.member,
+        courseCategory: CourseCategory.mediation,
         sessionCount: 10,
         deliveryMode: 'hybrid',
         learningOutcomes: [
@@ -149,10 +159,12 @@ class CIMACourseService {
         instructor: 'Investment Law Specialists',
         price: 1500.00,
         rating: 4.9,
-        imageUrl: 'assets/images/investment-arbitration.jpg',
-        duration: 6, // 6 days
-        level: CIMALevel.fellow,
-        category: CourseCategory.investment,
+        reviewCount: 75,
+        studentCount: 150,
+        image: 'assets/images/investment-arbitration.jpg',
+        duration: '6 days'
+        cimaLevel: CIMALevel.fellow,
+        courseCategory: CourseCategory.investment,
         prerequisites: ['International arbitration experience', 'Public international law background'],
         sessionCount: 18,
         deliveryMode: 'hybrid',
@@ -176,10 +188,12 @@ class CIMACourseService {
         instructor: 'Maritime Law Experts',
         price: 950.00,
         rating: 4.7,
-        imageUrl: 'assets/images/arbitration-london.jpg',
-        duration: 4, // 4 days
-        level: CIMALevel.member,
-        category: CourseCategory.maritime,
+        reviewCount: 60,
+        studentCount: 180,
+        image: 'assets/images/arbitration-london.jpg',
+        duration: '4 days'
+        cimaLevel: CIMALevel.member,
+        courseCategory: CourseCategory.maritime,
         sessionCount: 12,
         deliveryMode: 'virtual',
         learningOutcomes: [
@@ -202,10 +216,12 @@ class CIMACourseService {
         instructor: 'Sports Law Panel',
         price: 750.00,
         rating: 4.6,
-        imageUrl: 'assets/images/ethics-arbitration.jpg',
-        duration: 3, // 3 days
-        level: CIMALevel.member,
-        category: CourseCategory.sports,
+        reviewCount: 45,
+        studentCount: 120,
+        image: 'assets/images/ethics-arbitration.jpg',
+        duration: '3 days'
+        cimaLevel: CIMALevel.member,
+        courseCategory: CourseCategory.sports,
         sessionCount: 10,
         deliveryMode: 'virtual',
         learningOutcomes: [
@@ -228,10 +244,12 @@ class CIMACourseService {
         instructor: 'Technology & Law Experts',
         price: 550.00,
         rating: 4.5,
-        imageUrl: 'assets/images/compliance-risk.jpg',
-        duration: 2, // 2 days
-        level: CIMALevel.associate,
-        category: CourseCategory.technology,
+        reviewCount: 80,
+        studentCount: 220,
+        image: 'assets/images/compliance-risk.jpg',
+        duration: '2 days'
+        cimaLevel: CIMALevel.associate,
+        courseCategory: CourseCategory.technology,
         sessionCount: 8,
         deliveryMode: 'virtual',
         learningOutcomes: [
@@ -255,10 +273,12 @@ class CIMACourseService {
         instructor: 'CIMA Fellowship Board',
         price: 2500.00,
         rating: 5.0,
-        imageUrl: 'assets/images/diac-rules.jpg',
-        duration: 12, // 12 months
-        level: CIMALevel.fellow,
-        category: CourseCategory.arbitration,
+        reviewCount: 25,
+        studentCount: 50,
+        image: 'assets/images/diac-rules.jpg',
+        duration: '12 months'
+        cimaLevel: CIMALevel.fellow,
+        courseCategory: CourseCategory.arbitration,
         prerequisites: ['MCIMArb status', 'Minimum 5 years arbitration experience', 'Portfolio of cases'],
         sessionCount: 24,
         deliveryMode: 'hybrid',
