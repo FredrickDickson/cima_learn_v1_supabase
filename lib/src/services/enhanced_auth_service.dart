@@ -39,21 +39,35 @@ class EnhancedAuthService extends ChangeNotifier {
 
   // Initialize auth state
   Future<void> initialize() async {
-    _currentUser = _supabase.auth.currentUser;
-    if (_currentUser != null) {
-      await _loadUserProfile();
-    }
-    
-    // Listen to auth state changes
-    _supabase.auth.onAuthStateChange.listen((data) async {
-      _currentUser = data.session?.user;
+    try {
+      _currentUser = _supabase.auth.currentUser;
       if (_currentUser != null) {
         await _loadUserProfile();
-      } else {
-        _userProfile = null;
       }
-      notifyListeners();
-    });
+      
+      // Listen to auth state changes with error handling
+      _supabase.auth.onAuthStateChange.listen((data) async {
+        try {
+          final oldUser = _currentUser;
+          _currentUser = data.session?.user;
+          
+          if (_currentUser != null && (_currentUser!.id != oldUser?.id)) {
+            await _loadUserProfile();
+          } else if (_currentUser == null) {
+            _userProfile = null;
+          }
+          
+          notifyListeners();
+        } catch (e) {
+          debugPrint('Error in auth state change: $e');
+          _setError('Authentication state error');
+          notifyListeners();
+        }
+      });
+    } catch (e) {
+      debugPrint('Error initializing auth service: $e');
+      _setError('Failed to initialize authentication');
+    }
     
     notifyListeners();
   }
@@ -77,6 +91,15 @@ class EnhancedAuthService extends ChangeNotifier {
       }
     } catch (e) {
       debugPrint('Error loading user profile: $e');
+      // Set a basic profile to prevent null errors
+      _userProfile = {
+        'user_id': _currentUser!.id,
+        'email': _currentUser!.email ?? '',
+        'full_name': _currentUser!.userMetadata?['full_name'] ?? 'User',
+        'display_name': _currentUser!.userMetadata?['full_name']?.split(' ').first ?? 'User',
+        'role': 'student',
+        'cima_membership_level': 'associate',
+      };
     }
   }
   
