@@ -1,0 +1,244 @@
+CIMA Learn - Flutter Web Application
+File Structure Documentation
+Generated: September 5, 2025
+
+Root Directory:
+├── README.md                           # Enhanced comprehensive project documentation
+├── replit.md                          # Project state and user preferences
+├── pubspec.yaml                       # Flutter dependencies and configuration
+├── pubspec.lock                       # Dependency lock file
+├── analysis_options.yaml             # Dart analyzer configuration
+├── flutter_server.py                 # Python server for serving Flutter web build
+├── run_app.sh                        # Shell script for running the application
+├── package.json                       # Node.js package configuration
+
+Database Schema Files:
+├── database_schema.sql                # Main database schema
+├── enhanced_cms_database_schema.sql   # Content management system schema
+├── fixed_database_schema.sql          # Fixed database schema
+├── content_management_schema.sql      # Content management specific schema
+├── payment_system_tables.sql          # Payment system tables
+├── quiz_and_certificate_tables.sql   # Quiz and certificate system tables
+
+Flutter Application Structure:
+lib/
+├── main.dart                          # Application entry point
+├── config/                           # Application configuration
+│   ├── app_config.dart               # App configuration settings
+│   ├── app_routes.dart               # Route definitions and navigation
+│   ├── app_theme.dart                # Enhanced Material 3 theme with CIMA design tokens
+│   ├── constants.dart                # Application constants
+│   └── supabase_config.dart          # Supabase database configuration
+
+src/
+├── app.dart                          # Main app widget
+├── config/
+│   └── app_theme.dart                # Additional theme configuration
+├── models/                           # Data models and structures
+│   ├── cart_item.dart                # Shopping cart item model
+│   ├── cima_course.dart              # CIMA-specific course model with enums
+│   ├── course.dart                   # Main course data model
+│   ├── course_module.dart            # Course content module structure
+│   ├── course_progress.dart          # Learning progress tracking
+│   ├── enrollment_model.dart         # Course enrollment model
+│   ├── quiz.dart                     # Quiz and assessment models
+│   ├── user_model.dart               # User data model
+│   └── user_profile.dart             # Enhanced user profile with CIMA levels
+
+├── providers/                        # State management
+│   └── theme_provider.dart           # Theme state provider
+
+├── screens/                          # Application screens
+│   ├── admin_dashboard.dart          # Platform administration interface
+│   ├── cart_page.dart                # Shopping cart and checkout
+│   ├── content_upload_page.dart      # Content upload interface
+│   ├── course_content_page.dart      # Course content viewing
+│   ├── course_creation_page.dart     # Course creation interface
+│   ├── course_detail_page.dart       # Individual course information
+│   ├── course_management_page.dart   # Course management for instructors
+│   ├── enhanced_login_page.dart      # Modern authentication interface
+│   ├── enrolled_courses_page.dart    # User's enrolled courses
+│   ├── free_intro_course_page.dart   # Free introductory course
+│   ├── home_page.dart                # Landing page and course discovery
+│   ├── instructor_analytics_page.dart # Instructor analytics dashboard
+│   ├── instructor_courses_page.dart  # Instructor course management
+│   ├── instructor_dashboard.dart     # Main instructor dashboard
+│   ├── learning_paths_page.dart      # Structured learning paths
+│   ├── login_page.dart               # Basic login interface
+│   ├── not_found_page.dart           # 404 error page
+│   ├── onboarding_screen.dart        # User onboarding flow
+│   ├── privacy_policy_page.dart      # Privacy policy
+│   ├── profile_page.dart             # User profile management
+│   ├── progress_dashboard.dart       # Learning progress dashboard
+│   ├── signup_page.dart              # User registration
+│   └── terms_of_service_page.dart    # Terms of service
+
+├── services/                         # Business logic and API integration
+│   ├── admin_service.dart            # Administrative operations
+│   ├── auth_service.dart             # Basic authentication service
+│   ├── cart_service.dart             # Shopping cart management
+│   ├── certificate_service.dart     # Certificate generation and management
+│   ├── cima_course_service.dart      # CIMA-specific course operations
+│   ├── content_management_service.dart # Content management system
+│   ├── course_service.dart           # Basic course data management
+│   ├── enhanced_auth_service.dart    # Enhanced authentication with memory fixes
+│   ├── enhanced_course_service.dart  # Enhanced course service with error handling
+│   ├── enhanced_localization_service.dart # Multi-language support
+│   ├── enrollment_service.dart       # Course enrollment management
+│   ├── google_auth_service.dart      # Google OAuth integration
+│   ├── instructor_service.dart       # Instructor-specific functionality
+│   ├── localization_service.dart     # Basic localization service
+│   ├── module_service.dart           # Course module management
+│   ├── payment_service.dart          # Payment processing
+│   ├── paystack_service.dart         # Paystack payment integration
+│   ├── profile_service.dart          # User profile management
+│   ├── progress_service.dart         # Learning progress tracking
+│   └── quiz_service.dart             # Assessment and testing
+
+├── utils/                            # Helper functions and utilities
+│   └── responsive.dart               # Responsive design helpers
+
+└── widgets/                          # Reusable UI components
+    ├── accessibility_wrapper.dart    # Universal accessibility support
+    ├── advanced_search_widget.dart   # Advanced search functionality
+    ├── cart_icon_widget.dart         # Shopping cart icon with counter
+    ├── course_card.dart              # Basic course display card
+    ├── course_categories.dart        # Course category widgets
+    ├── course_filters_widget.dart    # Course filtering interface
+    ├── course_search_delegate.dart   # Search delegate for courses
+    ├── enhanced_course_card.dart     # Interactive course card with animations
+    ├── enhanced_error_widget.dart    # Smart error handling with user guidance
+    ├── enhanced_loading_widget.dart  # Branded loading animations and skeletons
+    ├── enrollment_button.dart        # Payment and enrollment integration
+    ├── footer.dart                   # Application footer
+    ├── header.dart                   # Navigation header with role-based menus
+    ├── hero_section.dart             # Landing page hero section
+    ├── language_selector_widget.dart # Multi-language selector
+    ├── loading_widget.dart           # Basic loading widget
+    ├── page_transitions.dart         # Smooth navigation transitions
+    ├── paystack_payment_widget.dart  # Paystack payment interface
+    ├── quiz_builder_widget.dart      # Quiz creation interface
+    ├── quiz_widget.dart              # Assessment interface
+    ├── responsive_layout.dart        # Responsive design utilities
+    ├── rich_text_editor.dart         # Rich text editing component
+    ├── search_bar_widget.dart        # Search bar component
+    ├── theme_switcher_widget.dart    # Theme switching component
+    └── video_player_widget.dart      # Course content video player
+
+Assets:
+assets/
+├── images/                           # Course images and branding
+│   ├── advanced-mediation.jpg        # Course image
+│   ├── arbitration-london.jpg        # Course image
+│   ├── cima_logo.png                 # CIMA brand logo
+│   ├── commercial-law.jpg            # Course image
+│   ├── compliance-risk.jpg           # Course image
+│   ├── construction-dispute.jpg      # Course image
+│   ├── diac-rules.jpg                # Course image
+│   ├── ethics-arbitration.jpg        # Course image
+│   ├── hero-legal-training.jpg       # Hero section image
+│   ├── investment-arbitration.jpg    # Course image
+│   └── mediation-fundamentals.jpg    # Course image
+
+Platform Configuration:
+android/                              # Android platform configuration
+ios/                                  # iOS platform configuration
+linux/                               # Linux platform configuration
+macos/                                # macOS platform configuration
+windows/                              # Windows platform configuration
+web/                                  # Web platform configuration
+├── icons/                            # Web app icons
+│   ├── Icon-192.png
+│   ├── Icon-512.png
+│   ├── Icon-maskable-192.png
+│   └── Icon-maskable-512.png
+├── favicon.png                       # Website favicon
+├── index.html                        # Web app entry point
+└── manifest.json                     # PWA manifest
+
+Build Output:
+build/
+└── web/                              # Production web build
+    ├── assets/                       # Built assets
+    ├── canvaskit/                    # Flutter engine files
+    ├── icons/                        # App icons
+    ├── favicon.png
+    ├── flutter.js
+    ├── flutter_bootstrap.js
+    ├── flutter_service_worker.js
+    ├── index.html
+    ├── main.dart.js
+    ├── manifest.json
+    └── version.json
+
+Testing:
+test/
+├── integration/                      # Integration tests
+│   └── payment_flow_test.dart        # Payment workflow tests
+├── performance/                      # Performance tests
+│   └── performance_test.dart         # Performance benchmarks
+├── unit/                             # Unit tests
+│   └── services_test.dart            # Service layer tests
+└── widget_test.dart                  # Widget tests
+
+Attached Assets (Development):
+attached_assets/                      # Development assets and documentation
+├── CIMA_BROCHURE_1756996999693.pdf
+├── cropped-cropped-cimalogo_1756994742727.png
+├── firefox_MMp3WJ4yMT_1757010657158.png
+├── mycima_Dj9BV9zFiX_1757024250774.png
+├── yX3RXgrIHy_1757021906154.png
+└── [Various development documentation files]
+
+Key Enhancements Made:
+======================
+
+1. Enhanced Design System:
+   - lib/config/app_theme.dart: Complete Material 3 design system with CIMA branding
+   - Design tokens: CIMAColors, CIMASpacing, CIMAAnimations, CIMABorderRadius
+   - Professional color palette with accessibility considerations
+   - Comprehensive typography system with proper line heights
+
+2. Enhanced UI Components:
+   - lib/src/widgets/enhanced_loading_widget.dart: Branded loading animations
+   - lib/src/widgets/enhanced_course_card.dart: Interactive course cards with hover effects
+   - lib/src/widgets/enhanced_error_widget.dart: Smart error handling with user guidance
+   - lib/src/widgets/accessibility_wrapper.dart: Universal accessibility support
+   - lib/src/widgets/page_transitions.dart: Smooth navigation transitions
+
+3. Accessibility Features:
+   - Screen reader optimization with ARIA labels
+   - Keyboard navigation with visible focus indicators
+   - High contrast theme support
+   - Font size scaling capabilities
+   - Error announcements for assistive technologies
+
+4. Micro-interactions & Animations:
+   - Hover effects and scale animations on course cards
+   - Page transitions (slide, fade, scale, rotate)
+   - Loading state animations with skeleton screens
+   - Hero animations for shared elements
+   - Staggered list animations for visual delight
+
+5. Enhanced User Experience:
+   - Context-aware error messages with helpful actions
+   - Toast notification system for user feedback
+   - Professional tone in all user-facing copy
+   - Smooth animations throughout the application
+   - Responsive design optimized for all screen sizes
+
+Design Philosophy:
+==================
+- Material 3 design principles with CIMA professional branding
+- Accessibility-first approach ensuring inclusive design
+- Performance-optimized animations for smooth user experience
+- Consistent design language across all components and screens
+- User-centered design with clear navigation and helpful feedback
+
+Technical Excellence:
+====================
+- Flutter 3.32.0 with latest Material 3 implementation
+- Comprehensive design token system for maintainability
+- Accessibility compliance with WCAG 2.1 AA standards
+- Performance-optimized animations and asset loading
+- Responsive design utilities for cross-device compatibility
