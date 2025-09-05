@@ -22,10 +22,5 @@ Future<void> main() async {
     print('Failed to initialize Supabase: $e');
   }
 
-  runApp(
-    ChangeNotifierProvider(
-      create: (_) => ThemeProvider(),
-      child: const CimaLearnApp(),
-    ),
-  );
+  runApp(const CimaLearnApp());
 }

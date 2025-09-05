@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../config/app_routes.dart';
-import '../config/app_theme.dart';
+import '../../config/app_theme.dart';
 import 'providers/theme_provider.dart';
 import 'screens/home_page.dart';
 import 'screens/login_page.dart';
@@ -96,50 +96,19 @@ class _CimaLearnAppState extends State<CimaLearnApp> {
       );
     }
 
-    return ChangeNotifierProvider(
-      create: (_) => ThemeProvider(),
-      child: Consumer<ThemeProvider>(
-        builder: (context, themeProvider, child) {
-          if (themeProvider.isLoading) {
-            return MaterialApp(
-              home: Scaffold(
-                body: Container(
-                  decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Color(0xFFB71C1C),
-                        Color(0xFF8B1538),
-                      ],
-                    ),
-                  ),
-                  child: const Center(
-                    child: CircularProgressIndicator(
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-            );
-          }
-
-          return MaterialApp(
-            debugShowCheckedModeBanner: false,
-            title: 'CIMA Learn - Dispute Resolution Training',
-            theme: appTheme(),
-            darkTheme: appTheme(),
-            themeMode: themeProvider.themeMode,
-            initialRoute: _isOnboardingCompleted ? '/' : '/onboarding',
-            onGenerateRoute: AppRoutes.generateRoute,
-            routes: {
-              '/onboarding': (context) => const OnboardingScreen(),
-            },
-            onUnknownRoute: (settings) => MaterialPageRoute(
-              builder: (context) => const NotFoundPage(),
-            ),
-          );
-        },
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'CIMA Learn - Dispute Resolution Training',
+      theme: appTheme(),
+      darkTheme: appTheme(),
+      themeMode: ThemeMode.system,
+      initialRoute: _isOnboardingCompleted ? '/' : '/onboarding',
+      onGenerateRoute: AppRoutes.generateRoute,
+      routes: {
+        '/onboarding': (context) => const OnboardingScreen(),
+      },
+      onUnknownRoute: (settings) => MaterialPageRoute(
+        builder: (context) => const NotFoundPage(),
       ),
     );
   }
