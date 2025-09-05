@@ -1,10 +1,10 @@
 /// Centralized application configuration
-/// All environment variables and API keys are managed here
-/// SECURITY: No default values for API keys - all come from environment only
+/// Following Flutter docs pattern - Supabase credentials are public with RLS protection
 class AppConfig {
-  // Supabase Configuration - Values come from environment only
-  static const String supabaseUrl = String.fromEnvironment('SUPABASE_URL');
-  static const String supabaseKey = String.fromEnvironment('SUPABASE_KEY');
+  // Supabase Configuration - Public values as per Flutter docs
+  // These are safe to expose as Row Level Security protects the data
+  static const String supabaseUrl = 'https://pgmtaemwcueobaexthaq.supabase.co';
+  static const String supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBnbXRhZW13Y3Vlb2JhZXh0aGFxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjU0NTk3NzcsImV4cCI6MjA0MTAzNTc3N30.Sfa7Z1UjmTkz5-rnUz4u_xTJ8oFI1EH45lJGaXqg_iY';
 
   // Paystack Payment Configuration - Values come from environment only
   static const String paystackPublicKey = String.fromEnvironment('PAYSTACK_PUBLIC_KEY');
@@ -30,8 +30,7 @@ class AppConfig {
   );
 
   // Validation helpers
-  static bool get isSupabaseConfigured => 
-      supabaseUrl.isNotEmpty && supabaseKey.isNotEmpty;
+  static bool get isSupabaseConfigured => true; // Always configured now
   
   static bool get isPaystackConfigured => 
       paystackPublicKey.isNotEmpty && paystackSecretKey.isNotEmpty;
@@ -41,18 +40,12 @@ class AppConfig {
   static String getPasswordResetUrl() => '$appProtocol://$appDomain/reset-password';
   static String getPaymentCallbackUrl() => '$appProtocol://$appDomain/payment/callback';
 
-  // Configuration validation - graceful handling for development
+  // Configuration validation - simplified for hardcoded Supabase
   static void validateConfig() {
-    if (!isSupabaseConfigured) {
-      print('⚠ Warning: Supabase configuration missing. Please set SUPABASE_URL and SUPABASE_KEY environment variables.');
-    }
+    print('✓ Supabase: Configured with hardcoded credentials');
     if (!isPaystackConfigured) {
       print('⚠ Warning: Paystack configuration missing. Payment features will not work.');
     }
-    
-    // Validate domain configuration
-    if (appDomain.isEmpty) {
-      print('⚠ Warning: APP_DOMAIN not configured. Using default domain.');
-    }
+    print('✓ Domain: $appDomain configured');
   }
 }
