@@ -3,6 +3,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/user_profile.dart';
 import '../services/profile_service.dart';
+import '../services/storage_service.dart';
 import '../utils/responsive.dart';
 import '../widgets/loading_widget.dart';
 
@@ -15,6 +16,7 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   final ProfileService _profileService = ProfileService();
+  final StorageService _storageService = StorageService();
   final _formKey = GlobalKey<FormState>();
   
   final _fullNameController = TextEditingController();
@@ -26,6 +28,7 @@ class _ProfilePageState extends State<ProfilePage> {
   UserProfile? _userProfile;
   bool _isLoading = true;
   bool _isSaving = false;
+  bool _isUploadingImage = false;
   String? _selectedCountry;
   List<String> _selectedPreferences = [];
 
@@ -122,6 +125,47 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
+  Future<void> _uploadProfileImage() async {
+    setState(() {
+      _isUploadingImage = true;
+    });
+
+    try {
+      final user = Supabase.instance.client.auth.currentUser;
+      if (user == null) return;
+
+      final imageUrl = await _storageService.uploadProfileImage(user.id);
+      
+      if (imageUrl != null) {
+        // Update the profile image in the database
+        final updatedProfile = await _profileService.updateProfileImage(
+          userId: user.id,
+          imageUrl: imageUrl,
+        );
+        
+        setState(() {
+          _userProfile = updatedProfile;
+        });
+
+        Fluttertoast.showToast(
+          msg: 'Profile image updated successfully!',
+          backgroundColor: const Color(0xFFB71C1C),
+          textColor: Colors.white,
+        );
+      }
+    } catch (e) {
+      Fluttertoast.showToast(
+        msg: 'Error uploading image: ${e.toString()}',
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+      );
+    } finally {
+      setState(() {
+        _isUploadingImage = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -196,24 +240,63 @@ class _ProfilePageState extends State<ProfilePage> {
         padding: const EdgeInsets.all(24),
         child: Row(
           children: [
-            CircleAvatar(
-              radius: 40,
-              backgroundColor: const Color(0xFFB71C1C),
-              backgroundImage: _userProfile?.profileImage != null 
-                  ? NetworkImage(_userProfile!.profileImage!)
-                  : null,
-              child: _userProfile?.profileImage == null
-                  ? Text(
-                      _userProfile?.fullName?.isNotEmpty == true 
-                          ? _userProfile!.fullName![0].toUpperCase()
-                          : 'U',
-                      style: const TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    )
-                  : null,
+            Stack(
+              children: [
+                CircleAvatar(
+                  radius: 40,
+                  backgroundColor: const Color(0xFFB71C1C),
+                  backgroundImage: _userProfile?.profileImage != null 
+                      ? NetworkImage(_userProfile!.profileImage!)
+                      : null,
+                  child: _userProfile?.profileImage == null
+                      ? Text(
+                          _userProfile?.fullName?.isNotEmpty == true 
+                              ? _userProfile!.fullName![0].toUpperCase()
+                              : 'U',
+                          style: const TextStyle(
+                            fontSize: 32,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        )
+                      : null,
+                ),
+                Positioned(
+                  bottom: 0,
+                  right: 0,
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      color: Color(0xFFB71C1C),
+                      shape: BoxShape.circle,
+                    ),
+                    child: _isUploadingImage
+                        ? const Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                              ),
+                            ),
+                          )
+                        : IconButton(
+                            icon: const Icon(
+                              Icons.camera_alt,
+                              color: Colors.white,
+                              size: 16,
+                            ),
+                            onPressed: _isUploadingImage ? null : _uploadProfileImage,
+                            padding: const EdgeInsets.all(8),
+                            constraints: const BoxConstraints(
+                              minWidth: 32,
+                              minHeight: 32,
+                            ),
+                          ),
+                  ),
+                ),
+              ],
             ),
             const SizedBox(width: 24),
             Expanded(

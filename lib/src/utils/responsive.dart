@@ -96,4 +96,16 @@ class ResponsiveFontSize {
     if (Responsive.isTablet(context)) return 15;
     return 14;
   }
+
+  static double heading4(BuildContext context) {
+    if (Responsive.isDesktop(context)) return 18;
+    if (Responsive.isTablet(context)) return 17;
+    return 16;
+  }
+
+  static double small(BuildContext context) {
+    if (Responsive.isDesktop(context)) return 14;
+    if (Responsive.isTablet(context)) return 13;
+    return 12;
+  }
 }

@@ -90,6 +90,32 @@ class ProfileService {
     }
   }
 
+  // Update profile image
+  Future<UserProfile> updateProfileImage({
+    required String userId,
+    required String imageUrl,
+  }) async {
+    try {
+      await _supabase
+          .from('profiles')
+          .update({
+            'profile_image': imageUrl,
+            'updated_at': DateTime.now().toIso8601String(),
+          })
+          .eq('id', userId);
+
+      // Fetch updated profile
+      final updatedProfile = await getUserProfile(userId);
+      if (updatedProfile == null) {
+        throw Exception('Failed to fetch updated profile');
+      }
+
+      return updatedProfile;
+    } catch (e) {
+      throw Exception('Failed to update profile image: $e');
+    }
+  }
+
   // Get available learning preferences
   List<String> getAvailableLearningPreferences() {
     return [
