@@ -37,4 +37,4 @@ externalPort = 80
 [deployment]
 deploymentTarget = "autoscale"
 run = ["python3", "flutter_server.py"]
-build = ["flutter", "build", "web", "--dart-define=SUPABASE_URL=https://pgmtaemwcueobaexthaq.supabase.co", "--dart-define=SUPABASE_KEY=$SUPABASE_KEY", "--release"]
+build = ["bash", "-c", "flutter clean && flutter pub get && flutter build web --dart-define=SUPABASE_URL=https://pgmtaemwcueobaexthaq.supabase.co --dart-define=SUPABASE_KEY=$SUPABASE_KEY --release"]
