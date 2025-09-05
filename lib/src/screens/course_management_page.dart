@@ -40,9 +40,13 @@ class _CourseManagementPageState extends State<CourseManagementPage> {
           description: 'Comprehensive introduction to arbitration principles',
           instructor: 'Dr. Sarah Johnson',
           rating: 4.8,
+          reviewCount: 245,
+          duration: '8 hours',
+          studentCount: 1250,
           price: 299.99,
           category: 'arbitration',
-          imageUrl: '',
+          level: 'Beginner',
+          image: '/assets/images/arbitration-course.jpg',
         ),
         Course(
           id: '2',
@@ -50,9 +54,13 @@ class _CourseManagementPageState extends State<CourseManagementPage> {
           description: 'Advanced strategies for effective mediation',
           instructor: 'Prof. Michael Chen',
           rating: 4.9,
+          reviewCount: 189,
+          duration: '12 hours',
+          studentCount: 890,
           price: 399.99,
           category: 'mediation',
-          imageUrl: '',
+          level: 'Advanced',
+          image: '/assets/images/mediation-course.jpg',
         ),
       ];
 
@@ -63,9 +71,11 @@ class _CourseManagementPageState extends State<CourseManagementPage> {
       setState(() {
         _isLoading = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error loading courses: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error loading courses: $e')),
+        );
+      }
     }
   }
 
@@ -76,9 +86,11 @@ class _CourseManagementPageState extends State<CourseManagementPage> {
         _modules = modules;
       });
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error loading modules: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error loading modules: $e')),
+        );
+      }
     }
   }
 

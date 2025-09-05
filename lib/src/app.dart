@@ -127,8 +127,8 @@ class _CimaLearnAppState extends State<CimaLearnApp> {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
             title: 'CIMA Learn - Dispute Resolution Training',
-            theme: AppTheme.lightTheme,
-            darkTheme: AppTheme.darkTheme,
+            theme: appTheme(),
+            darkTheme: appTheme(),
             themeMode: themeProvider.themeMode,
             initialRoute: _isOnboardingCompleted ? '/' : '/onboarding',
             onGenerateRoute: AppRoutes.generateRoute,

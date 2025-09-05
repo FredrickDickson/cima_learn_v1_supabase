@@ -51,7 +51,3 @@ Future<void> main() async {
     ),
   );
 }
-
-// Global Supabase client instance as per Flutter docs
-final supabase = Supabase.instance.client;
-}
