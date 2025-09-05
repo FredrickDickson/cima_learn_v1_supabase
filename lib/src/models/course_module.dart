@@ -274,7 +274,7 @@ class CourseModule {
   String? getLocalizedContentUrl(String preferredLanguage) {
     return getContentForLanguage(preferredLanguage) ?? 
            getContentForLanguage('en') ?? 
-           content.values.isNotEmpty ? content.values.first : null;
+           (content.values.isNotEmpty ? content.values.first : null);
   }
 
   /// Check if module has content in a specific language

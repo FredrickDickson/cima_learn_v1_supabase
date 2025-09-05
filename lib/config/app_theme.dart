@@ -202,7 +202,7 @@ ThemeData appTheme() {
     ),
     
     // Enhanced Card Theme
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       color: CIMAColors.cardBackground,
       elevation: 2,
       shadowColor: Colors.black.withOpacity(0.1),

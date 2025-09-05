@@ -34,6 +34,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   List<Course> _filteredCourses = [];
 
   bool get isMobile => Responsive.isMobile(context);
+  bool get isOfflineMode => false; // Set to false for now, can be configured later
 
   void showToast(String message) {
     Fluttertoast.showToast(

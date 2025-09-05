@@ -5,6 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:dio/dio.dart';
+import 'package:video_thumbnail/video_thumbnail.dart';
 import '../models/video_lesson.dart';
 
 /// Service for handling file uploads and storage with Supabase Storage

@@ -548,17 +548,24 @@ class VideoService {
     return _supabase
         .from('video_progress')
         .stream(primaryKey: ['lesson_id', 'user_id'])
-        .eq('lesson_id', lessonId)
-        .eq('user_id', userId)
-        .map((data) => data.isNotEmpty ? VideoProgress.fromJson(data.first) : 
-             VideoProgress(
-               id: 'temp',
-               userId: userId,
-               lessonId: lessonId,
-               lastWatchedAt: DateTime.now(),
-               createdAt: DateTime.now(),
-               updatedAt: DateTime.now(),
-             ));
+        .asyncMap((data) async {
+          // Filter data based on the parameters
+          final filteredData = data.where((item) => 
+            item['lesson_id'].toString() == lessonId && 
+            item['user_id'].toString() == userId
+          ).toList();
+          
+          return filteredData.isNotEmpty 
+            ? VideoProgress.fromJson(filteredData.first) 
+            : VideoProgress(
+                id: 'temp',
+                userId: userId,
+                lessonId: lessonId,
+                lastWatchedAt: DateTime.now(),
+                createdAt: DateTime.now(),
+                updatedAt: DateTime.now(),
+              );
+        });
   }
 
   /// Get next video lesson in sequence

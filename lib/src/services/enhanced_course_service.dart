@@ -43,9 +43,9 @@ class EnhancedCourseService {
       }
 
       // Add ordering for consistent results
-      queryBuilder = queryBuilder.order('created_at', ascending: false);
+      final orderedQuery = queryBuilder.order('created_at', ascending: false);
 
-      final response = await queryBuilder.timeout(const Duration(seconds: 10));
+      final response = await orderedQuery.timeout(const Duration(seconds: 10));
 
       if (response.isEmpty) {
         print('No courses found in database, using mock data');

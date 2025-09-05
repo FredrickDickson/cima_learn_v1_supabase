@@ -1,7 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/course.dart';
 import '../models/video_lesson.dart';
-import '../models/course_module.dart';
+import '../models/course_module.dart' as course_module;
 import '../../config/supabase_config.dart';
 import 'video_service.dart';
 
@@ -291,7 +291,7 @@ class CourseService {
             orElse: () => VideoProgress(
               id: 'temp',
               userId: userId,
-              lessonId: lesson['id'],
+              lessonId: lesson['id'], 
               lastWatchedAt: DateTime.now(),
               createdAt: DateTime.now(),
               updatedAt: DateTime.now(),
@@ -323,7 +323,7 @@ class CourseService {
   }
 
   /// Get course modules with video lessons
-  Future<List<CourseModule>> getCourseModulesWithVideos(String courseId, String userId) async {
+  Future<List<course_module.CourseModule>> getCourseModulesWithVideos(String courseId, String userId) async {
     try {
       final response = await Supabase.instance.client
           .from('course_modules')
@@ -334,7 +334,7 @@ class CourseService {
           .eq('course_id', courseId)
           .order('order_index');
 
-      final modules = <CourseModule>[];
+      final modules = <course_module.CourseModule>[];
       
       for (final moduleData in response) {
         // Get video lessons for this module
@@ -344,7 +344,7 @@ class CourseService {
         );
 
         // Convert to CourseModule with video data
-        final module = CourseModule.fromJson({
+        final module = course_module.CourseModule.fromJson({
           ...moduleData,
           'video_lessons': videoLessons.map((lesson) => lesson.toJson()).toList(),
         });
