@@ -452,6 +452,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Comprehensive design system implementation
 
 ### **Phase 2 - In Development** 🔄
+- Storage for assets, videos,images in supabase
 - Native mobile applications (iOS/Android) with design system consistency
 - Advanced analytics dashboard with beautiful data visualizations
 - Live virtual classroom integration with interactive features
