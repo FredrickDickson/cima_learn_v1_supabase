@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:provider/provider.dart';
-import 'package:cima_learn/main.dart';
+import 'package:cima_learn/src/app.dart';
 import 'package:cima_learn/src/services/cart_service.dart';
 import 'package:cima_learn/src/services/enhanced_auth_service.dart';
+import 'package:cima_learn/src/providers/theme_provider.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -19,7 +20,7 @@ void main() {
             ChangeNotifierProvider(create: (_) => CartService()),
             ChangeNotifierProvider(create: (_) => EnhancedAuthService()),
           ],
-          child: const MyApp(),
+          child: const CimaLearnApp(),
         ),
       );
 
@@ -39,7 +40,7 @@ void main() {
             ChangeNotifierProvider(create: (_) => CartService()),
             ChangeNotifierProvider(create: (_) => EnhancedAuthService()),
           ],
-          child: const MyApp(),
+          child: const CimaLearnApp(),
         ),
       );
 
@@ -75,7 +76,7 @@ void main() {
               ChangeNotifierProvider(create: (_) => CartService()),
               ChangeNotifierProvider(create: (_) => EnhancedAuthService()),
             ],
-            child: const MyApp(),
+            child: const CimaLearnApp(),
           ),
         );
 
@@ -106,7 +107,7 @@ void main() {
           child: Builder(
             builder: (context) {
               rebuildCount++;
-              return const MyApp();
+              return const CimaLearnApp();
             },
           ),
         ),

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
-import 'package:cima_learn/main.dart';
+import 'package:cima_learn/src/app.dart';
 import 'package:cima_learn/src/services/cart_service.dart';
 import 'package:cima_learn/src/services/enhanced_auth_service.dart';
+import 'package:cima_learn/src/providers/theme_provider.dart';
 
 void main() {
   group('CIMA Learn App Widget Tests', () {
@@ -15,7 +16,7 @@ void main() {
             ChangeNotifierProvider(create: (_) => CartService()),
             ChangeNotifierProvider(create: (_) => EnhancedAuthService()),
           ],
-          child: const MyApp(),
+          child: const CimaLearnApp(),
         ),
       );
 
@@ -30,7 +31,7 @@ void main() {
             ChangeNotifierProvider(create: (_) => CartService()),
             ChangeNotifierProvider(create: (_) => EnhancedAuthService()),
           ],
-          child: const MyApp(),
+          child: const CimaLearnApp(),
         ),
       );
 
@@ -38,7 +39,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Look for CIMA Learn text
-      expect(find.text('CIMA Learn'), findsAtLeastOneWidget);
+      expect(find.text('CIMA Learn'), findsOneOrMoreWidgets);
     });
 
     testWidgets('Navigation should work properly', (WidgetTester tester) async {
@@ -48,7 +49,7 @@ void main() {
             ChangeNotifierProvider(create: (_) => CartService()),
             ChangeNotifierProvider(create: (_) => EnhancedAuthService()),
           ],
-          child: const MyApp(),
+          child: const CimaLearnApp(),
         ),
       );
 
@@ -67,14 +68,14 @@ void main() {
             ChangeNotifierProvider(create: (_) => CartService()),
             ChangeNotifierProvider(create: (_) => EnhancedAuthService()),
           ],
-          child: const MyApp(),
+          child: const CimaLearnApp(),
         ),
       );
 
       await tester.pumpAndSettle();
 
       // Cart icon should be visible
-      expect(find.byIcon(Icons.shopping_cart), findsAtLeastOneWidget);
+      expect(find.byIcon(Icons.shopping_cart), findsOneOrMoreWidgets);
     });
   });
 }
