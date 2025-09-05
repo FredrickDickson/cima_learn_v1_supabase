@@ -7,6 +7,7 @@ import 'src/app.dart';
 import 'src/providers/theme_provider.dart';
 import 'src/services/enhanced_auth_service.dart';
 import 'src/services/cart_service.dart';
+import 'src/services/instructor_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,6 +33,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => EnhancedAuthService()),
         ChangeNotifierProvider(create: (_) => CartService()),
+        ChangeNotifierProvider(create: (_) => InstructorService()),
       ],
       child: const CimaLearnApp(),
     ),

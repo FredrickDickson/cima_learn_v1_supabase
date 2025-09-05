@@ -13,6 +13,7 @@ import '../models/video_lesson.dart';
 class StorageService {
   static final StorageService _instance = StorageService._internal();
   factory StorageService() => _instance;
+  static StorageService get instance => _instance;
   StorageService._internal();
 
   final SupabaseClient _supabase = Supabase.instance.client;

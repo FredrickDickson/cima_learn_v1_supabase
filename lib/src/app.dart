@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../config/app_routes.dart';
 import '../config/app_theme.dart';
-import 'config/app_theme.dart';
 import 'providers/theme_provider.dart';
 import 'screens/home_page.dart';
 import 'screens/login_page.dart';
@@ -132,17 +131,9 @@ class _CimaLearnAppState extends State<CimaLearnApp> {
             darkTheme: AppTheme.darkTheme,
             themeMode: themeProvider.themeMode,
             initialRoute: _isOnboardingCompleted ? '/' : '/onboarding',
+            onGenerateRoute: AppRoutes.generateRoute,
             routes: {
-              '/': (context) => const HomePage(),
-              '/login': (context) => const LoginPage(),
-              '/signup': (context) => const SignupPage(),
-              '/enrolled-courses': (context) => const EnrolledCoursesPage(),
               '/onboarding': (context) => const OnboardingScreen(),
-              '/learning-paths': (context) => const LearningPathsPage(),
-              '/free-intro-course': (context) => const FreeIntroCourse(),
-              '/admin': (context) => const AdminDashboard(),
-              '/instructor': (context) => const InstructorDashboard(),
-              '/cart': (context) => const CartPage(),
             },
             onUnknownRoute: (settings) => MaterialPageRoute(
               builder: (context) => const NotFoundPage(),

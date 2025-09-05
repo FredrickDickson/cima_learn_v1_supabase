@@ -11,6 +11,7 @@ import '../src/screens/admin_dashboard.dart';
 import '../src/screens/instructor_dashboard.dart';
 import '../src/screens/learning_paths_page.dart';
 import '../src/screens/free_intro_course_page.dart';
+import '../src/screens/onboarding_screen.dart';
 
 class AppRoutes {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -41,6 +42,9 @@ class AppRoutes {
 
       case '/free-intro-course':
         return MaterialPageRoute(builder: (_) => const FreeIntroCourse());
+
+      case '/onboarding':
+        return MaterialPageRoute(builder: (_) => const OnboardingScreen());
 
       default:
         return MaterialPageRoute(builder: (_) => const NotFoundPage());
