@@ -27,6 +27,19 @@ class PaystackService {
     required String userEmail,
     Map<String, dynamic>? metadata,
   }) async {
+    // Input validation
+    if (courseId.isEmpty || courseName.isEmpty || userEmail.isEmpty) {
+      return PaymentResult.error('Invalid payment parameters');
+    }
+
+    if (amount <= 0) {
+      return PaymentResult.error('Invalid payment amount');
+    }
+
+    if (_secretKey.isEmpty) {
+      return PaymentResult.error('Payment service not configured');
+    }
+
     try {
       // Convert amount to kobo (Paystack uses kobo for NGN)
       final int amountInKobo = (amount * 100).round();
@@ -38,7 +51,7 @@ class PaystackService {
           'Content-Type': 'application/json',
         },
         body: jsonEncode({
-          'email': userEmail,
+          'email': userEmail.trim().toLowerCase(),
           'amount': amountInKobo,
           'currency': currency.toUpperCase(),
           'reference': _generateReference(courseId),
@@ -48,11 +61,13 @@ class PaystackService {
             'course_name': courseName,
             'user_id': _authService.userId,
             'payment_type': 'course_enrollment',
+            'amount_original': amount,
+            'timestamp': DateTime.now().toIso8601String(),
             ...?metadata,
           },
           'channels': ['card', 'bank', 'ussd', 'qr', 'mobile_money', 'bank_transfer'],
         }),
-      );
+      ).timeout(const Duration(seconds: 30));
 
       final responseData = jsonDecode(response.body);
 

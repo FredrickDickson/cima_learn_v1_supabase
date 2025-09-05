@@ -18,22 +18,48 @@ class CartService extends ChangeNotifier {
   bool get isNotEmpty => _items.isNotEmpty;
 
   double get totalPrice {
-    return _items.fold(0.0, (sum, item) => sum + item.price);
+    return _items.fold(0.0, (sum, item) => sum + (item.price ?? 0.0));
   }
+
+  double get totalAmount => totalPrice; // Alias for consistency
 
   Future<void> loadCart() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final cartJson = prefs.getString(_cartKey);
       
-      if (cartJson != null) {
+      if (cartJson != null && cartJson.isNotEmpty) {
         final List<dynamic> cartData = jsonDecode(cartJson);
-        _items = cartData.map((item) => CartItem.fromJson(item)).toList();
+        _items = cartData.map((item) {
+          try {
+            return CartItem.fromJson(item);
+          } catch (e) {
+            debugPrint('Error parsing cart item: $e');
+            return null;
+          }
+        }).where((item) => item != null).cast<CartItem>().toList();
+        
+        // Validate cart items and remove any invalid ones
+        _items.removeWhere((item) => 
+          item.courseId.isEmpty || 
+          item.title.isEmpty || 
+          (item.price ?? 0.0) < 0
+        );
+        
+        if (_items.isNotEmpty) {
+          await _saveCart(); // Save cleaned cart
+        }
+        
         notifyListeners();
       }
     } catch (e) {
       debugPrint('Error loading cart: $e');
       _items = [];
+      // Clear corrupted cart data
+      try {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.remove(_cartKey);
+      } catch (_) {}
     }
   }
 

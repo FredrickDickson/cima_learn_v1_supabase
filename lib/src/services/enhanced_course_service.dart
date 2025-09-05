@@ -18,35 +18,48 @@ class EnhancedCourseService {
       
       var queryBuilder = _supabase.from('courses').select();
 
-      // Apply filters
-      if (category != null && category != 'All Categories') {
-        queryBuilder = queryBuilder.eq('category', category.toLowerCase().replaceAll(' ', '-'));
+      // Apply filters with better validation
+      if (category != null && category.isNotEmpty && category != 'All Categories' && category != 'all') {
+        final normalizedCategory = category.toLowerCase().replaceAll(' ', '-');
+        queryBuilder = queryBuilder.eq('category', normalizedCategory);
       }
 
-      if (level != null && level != 'All Levels') {
+      if (level != null && level.isNotEmpty && level != 'All Levels') {
         queryBuilder = queryBuilder.eq('level', level);
       }
 
-      if (minPrice != null) {
+      if (minPrice != null && minPrice > 0) {
         queryBuilder = queryBuilder.gte('price', minPrice);
       }
 
-      if (maxPrice != null) {
+      if (maxPrice != null && maxPrice > 0) {
         queryBuilder = queryBuilder.lte('price', maxPrice);
       }
 
-      if (query != null && query.isNotEmpty) {
-        queryBuilder = queryBuilder.or('title.ilike.%$query%,description.ilike.%$query%,instructor.ilike.%$query%');
+      // Improved search with better text matching
+      if (query != null && query.trim().isNotEmpty) {
+        final searchTerm = query.trim();
+        queryBuilder = queryBuilder.or('title.ilike.%$searchTerm%,description.ilike.%$searchTerm%,instructor.ilike.%$searchTerm%');
       }
 
-      final response = await queryBuilder;
+      // Add ordering for consistent results
+      queryBuilder = queryBuilder.order('created_at', ascending: false);
+
+      final response = await queryBuilder.timeout(const Duration(seconds: 10));
 
       if (response.isEmpty) {
         print('No courses found in database, using mock data');
         return _searchMockCourses(query: query, category: category);
       }
 
-      return response.map((json) => Course.fromJson(json)).toList();
+      return response.map((json) {
+        try {
+          return Course.fromJson(json);
+        } catch (e) {
+          print('Error parsing course JSON: $e');
+          return null;
+        }
+      }).where((course) => course != null).cast<Course>().toList();
     } catch (e) {
       print('Error searching courses: $e');
       return _searchMockCourses(query: query, category: category);
