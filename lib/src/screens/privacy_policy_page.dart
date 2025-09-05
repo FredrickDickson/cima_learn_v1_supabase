@@ -81,7 +81,7 @@ class PrivacyPolicyPage extends StatelessWidget {
             _buildSection(
               context,
               'Contact Us',
-              'If you have questions about this Privacy Policy, please contact us at privacy@cimalearb.com.',
+              'If you have questions about this Privacy Policy, please contact us at privacy@cimalearn.com.',
             ),
             
             const SizedBox(height: 48),

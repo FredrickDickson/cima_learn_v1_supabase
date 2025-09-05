@@ -93,7 +93,7 @@ class TermsOfServicePage extends StatelessWidget {
             _buildSection(
               context,
               'Contact Information',
-              'For questions about these Terms of Service, please contact us at legal@cimalearb.com.',
+              'For questions about these Terms of Service, please contact us at legal@cimalearn.com.',
             ),
             
             const SizedBox(height: 48),
