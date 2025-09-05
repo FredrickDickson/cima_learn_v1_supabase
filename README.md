@@ -118,7 +118,7 @@ A cutting-edge Flutter web application delivering world-class training in disput
 
 1. **Clone the Repository**
 ```bash
-git clone https://github.com/your-repo/cima-learn.git
+https://github.com/FredrickDickson/cima_learn_v1_supabase.git
 cd cima-learn
 ```
 
