@@ -5,11 +5,11 @@ import '../../config/supabase_config.dart';
 import '../../models/user_profile.dart';
 import '../../utils/validators.dart';
 import 'auth_event.dart';
-import 'auth_state.dart' as local_auth;
+import 'auth_state.dart' as auth_states;
 
 /// Authentication BLoC managing user authentication and profile state
-class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  AuthBloc() : super(AuthInitial()) {
+class AuthBloc extends Bloc<AuthEvent, auth_states.auth_states::AuthState> {
+  AuthBloc() : super(auth_states.AuthInitial()) {
     // Register event handlers
     on<AuthCheckRequested>(_onAuthCheckRequested);
     on<AuthSignInRequested>(_onAuthSignInRequested);
@@ -41,9 +41,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   /// Check if user is already authenticated
   Future<void> _onAuthCheckRequested(
     AuthCheckRequested event,
-    Emitter<AuthState> emit,
+    Emitter<auth_states::AuthState> emit,
   ) async {
-    emit(AuthLoading());
+    emit(auth_states::AuthLoading());
 
     try {
       final session = supabase.auth.currentSession;
@@ -51,31 +51,31 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       if (session?.user != null) {
         await _loadUserProfile(session!.user, emit);
       } else {
-        emit(AuthUnauthenticated());
+        emit(auth_states::AuthUnauthenticated());
       }
     } catch (e) {
-      emit(AuthError(message: 'Failed to check authentication status: $e'));
+      emit(auth_states::AuthError(message: 'Failed to check authentication status: $e'));
     }
   }
 
   /// Handle user sign in
   Future<void> _onAuthSignInRequested(
     AuthSignInRequested event,
-    Emitter<AuthState> emit,
+    Emitter<auth_states::AuthState> emit,
   ) async {
-    emit(AuthLoading());
+    emit(auth_states::AuthLoading());
 
     try {
       // Validate input
       final emailError = Validators.validateEmail(event.email);
       if (emailError != null) {
-        emit(AuthError(message: emailError));
+        emit(auth_states::AuthError(message: emailError));
         return;
       }
 
       final passwordError = Validators.validatePassword(event.password);
       if (passwordError != null) {
-        emit(AuthError(message: passwordError));
+        emit(auth_states::AuthError(message: passwordError));
         return;
       }
 
@@ -88,39 +88,39 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       if (response.user != null) {
         await _loadUserProfile(response.user!, emit);
       } else {
-        emit(AuthError(message: 'Sign in failed'));
+        emit(auth_states::AuthError(message: 'Sign in failed'));
       }
     } on AuthException catch (e) {
-      emit(AuthError(message: _getAuthErrorMessage(e)));
+      emit(auth_states::AuthError(message: _getAuthErrorMessage(e)));
     } catch (e) {
-      emit(AuthError(message: 'An unexpected error occurred: $e'));
+      emit(auth_states::AuthError(message: 'An unexpected error occurred: $e'));
     }
   }
 
   /// Handle user sign up
   Future<void> _onAuthSignUpRequested(
     AuthSignUpRequested event,
-    Emitter<AuthState> emit,
+    Emitter<auth_states::AuthState> emit,
   ) async {
-    emit(AuthLoading());
+    emit(auth_states::AuthLoading());
 
     try {
       // Validate input
       final emailError = Validators.validateEmail(event.email);
       if (emailError != null) {
-        emit(AuthError(message: emailError));
+        emit(auth_states::AuthError(message: emailError));
         return;
       }
 
       final passwordError = Validators.validatePassword(event.password);
       if (passwordError != null) {
-        emit(AuthError(message: passwordError));
+        emit(auth_states::AuthError(message: passwordError));
         return;
       }
 
       final nameError = Validators.validateName(event.fullName);
       if (nameError != null) {
-        emit(AuthError(message: nameError));
+        emit(auth_states::AuthError(message: nameError));
         return;
       }
 
@@ -137,24 +137,24 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           await _createUserProfile(response.user!, event.fullName, emit);
         } else {
           // Email verification required
-          emit(AuthEmailVerificationPending(email: event.email));
+          emit(auth_states::AuthEmailVerificationPending(email: event.email));
         }
       } else {
-        emit(AuthError(message: 'Sign up failed'));
+        emit(auth_states::AuthError(message: 'Sign up failed'));
       }
     } on AuthException catch (e) {
-      emit(AuthError(message: _getAuthErrorMessage(e)));
+      emit(auth_states::AuthError(message: _getAuthErrorMessage(e)));
     } catch (e) {
-      emit(AuthError(message: 'An unexpected error occurred: $e'));
+      emit(auth_states::AuthError(message: 'An unexpected error occurred: $e'));
     }
   }
 
   /// Handle Google sign in
   Future<void> _onAuthGoogleSignInRequested(
     AuthGoogleSignInRequested event,
-    Emitter<AuthState> emit,
+    Emitter<auth_states::AuthState> emit,
   ) async {
-    emit(AuthLoading());
+    emit(auth_states::AuthLoading());
 
     try {
       final response = await supabase.auth.signInWithOAuth(
@@ -164,59 +164,59 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
       // Note: OAuth flow completes in the auth state change listener
     } on AuthException catch (e) {
-      emit(AuthError(message: _getAuthErrorMessage(e)));
+      emit(auth_states::AuthError(message: _getAuthErrorMessage(e)));
     } catch (e) {
-      emit(AuthError(message: 'Google sign in failed: $e'));
+      emit(auth_states::AuthError(message: 'Google sign in failed: $e'));
     }
   }
 
   /// Handle user sign out
   Future<void> _onAuthSignOutRequested(
     AuthSignOutRequested event,
-    Emitter<AuthState> emit,
+    Emitter<auth_states::AuthState> emit,
   ) async {
-    emit(AuthLoading());
+    emit(auth_states::AuthLoading());
 
     try {
       await supabase.auth.signOut();
-      emit(AuthUnauthenticated());
+      emit(auth_states::AuthUnauthenticated());
     } catch (e) {
-      emit(AuthError(message: 'Sign out failed: $e'));
+      emit(auth_states::AuthError(message: 'Sign out failed: $e'));
     }
   }
 
   /// Handle password reset request
   Future<void> _onAuthPasswordResetRequested(
     AuthPasswordResetRequested event,
-    Emitter<AuthState> emit,
+    Emitter<auth_states::AuthState> emit,
   ) async {
-    emit(AuthLoading());
+    emit(auth_states::AuthLoading());
 
     try {
       final emailError = Validators.validateEmail(event.email);
       if (emailError != null) {
-        emit(AuthError(message: emailError));
+        emit(auth_states::AuthError(message: emailError));
         return;
       }
 
       await supabase.auth.resetPasswordForEmail(event.email);
-      emit(AuthPasswordResetSent(email: event.email));
+      emit(auth_states::AuthPasswordResetSent(email: event.email));
     } on AuthException catch (e) {
-      emit(AuthError(message: _getAuthErrorMessage(e)));
+      emit(auth_states::AuthError(message: _getAuthErrorMessage(e)));
     } catch (e) {
-      emit(AuthError(message: 'Password reset failed: $e'));
+      emit(auth_states::AuthError(message: 'Password reset failed: $e'));
     }
   }
 
   /// Handle profile update
   Future<void> _onAuthProfileUpdateRequested(
     AuthProfileUpdateRequested event,
-    Emitter<AuthState> emit,
+    Emitter<auth_states::AuthState> emit,
   ) async {
     if (state is! AuthAuthenticated) return;
 
     final currentState = state as AuthAuthenticated;
-    emit(AuthProfileUpdating(user: currentState.user, profile: currentState.profile));
+    emit(auth_states::AuthProfileUpdating(user: currentState.user, profile: currentState.profile));
 
     try {
       final updates = <String, dynamic>{};
@@ -239,19 +239,19 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       // Reload profile
       await _loadUserProfile(currentState.user, emit);
     } catch (e) {
-      emit(AuthError(message: 'Profile update failed: $e'));
+      emit(auth_states::AuthError(message: 'Profile update failed: $e'));
     }
   }
 
   /// Handle role upgrade request
   Future<void> _onAuthRoleUpgradeRequested(
     AuthRoleUpgradeRequested event,
-    Emitter<AuthState> emit,
+    Emitter<auth_states::AuthState> emit,
   ) async {
     if (state is! AuthAuthenticated) return;
 
     final currentState = state as AuthAuthenticated;
-    emit(AuthLoading());
+    emit(auth_states::AuthLoading());
 
     try {
       // Submit instructor application
@@ -263,18 +263,18 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         'submitted_at': DateTime.now().toIso8601String(),
       });
 
-      emit(AuthRoleUpgradeSubmitted(
+      emit(auth_states::AuthRoleUpgradeSubmitted(
         user: currentState.user,
         profile: currentState.profile,
         targetRole: event.targetRole,
       ));
     } catch (e) {
-      emit(AuthError(message: 'Role upgrade application failed: $e'));
+      emit(auth_states::AuthError(message: 'Role upgrade application failed: $e'));
     }
   }
 
   /// Load user profile from database
-  Future<void> _loadUserProfile(User user, [Emitter<AuthState>? emit]) async {
+  Future<void> _loadUserProfile(User user, [Emitter<auth_states::AuthState>? emit]) async {
     try {
       final response = await supabase
           .from('user_profiles')
@@ -291,17 +291,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
 
       if (emit != null) {
-        emit(AuthAuthenticated(user: user, profile: profile));
+        emit(auth_states::AuthAuthenticated(user: user, profile: profile));
       }
     } catch (e) {
       if (emit != null) {
-        emit(AuthError(message: 'Failed to load user profile: $e'));
+        emit(auth_states::AuthError(message: 'Failed to load user profile: $e'));
       }
     }
   }
 
   /// Create user profile after sign up
-  Future<void> _createUserProfile(User user, String fullName, Emitter<AuthState> emit) async {
+  Future<void> _createUserProfile(User user, String fullName, Emitter<auth_states::AuthState> emit) async {
     try {
       final profileData = {
         'id': user.id,
@@ -315,9 +315,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       await supabase.from('user_profiles').insert(profileData);
 
       final profile = UserProfile.fromJson(profileData);
-      emit(AuthAuthenticated(user: user, profile: profile));
+      emit(auth_states::AuthAuthenticated(user: user, profile: profile));
     } catch (e) {
-      emit(AuthError(message: 'Failed to create user profile: $e'));
+      emit(auth_states::AuthError(message: 'Failed to create user profile: $e'));
     }
   }
 

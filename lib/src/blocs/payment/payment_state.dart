@@ -112,8 +112,8 @@ class PaymentFailure extends PaymentState {
 }
 
 /// State when payment is cancelled
-class PaymentCancelled extends PaymentState {
-  const PaymentCancelled({
+class PaymentCancelledState extends PaymentState {
+  const PaymentCancelledState({
     required this.reference,
     required this.message,
   });
@@ -154,8 +154,8 @@ class PaymentRefunded extends PaymentState {
 }
 
 /// State when discount is applied
-class PaymentDiscountApplied extends PaymentState {
-  const PaymentDiscountApplied({
+class PaymentDiscountAppliedState extends PaymentState {
+  const PaymentDiscountAppliedState({
     required this.couponCode,
     required this.discountAmount,
     required this.discountPercentage,

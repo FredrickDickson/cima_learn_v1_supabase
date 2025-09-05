@@ -12,12 +12,24 @@ else
     echo "Warning: SUPABASE_KEY not found in environment"
 fi
 
+# Clean and prepare Flutter project
+echo "Cleaning Flutter project..."
+flutter clean
+
+echo "Getting Flutter dependencies..."
+flutter pub get --no-precompile
+
+# Analyze the project for issues
+echo "Analyzing Flutter project..."
+flutter analyze --no-fatal-infos
+
 # Build the Flutter web app with environment variables
 echo "Building Flutter web app..."
 flutter build web \
     --dart-define=SUPABASE_URL="$SUPABASE_URL" \
     --dart-define=SUPABASE_KEY="$SUPABASE_KEY" \
-    --base-href /
+    --base-href / \
+    --release
 
 # Check if build was successful
 if [ $? -eq 0 ]; then

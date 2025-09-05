@@ -83,6 +83,92 @@ class CourseContent {
   }
 }
 
+// Additional classes for enhanced module functionality
+class ModuleContent {
+  final String id;
+  final String language;
+  final String title;
+  final String description;
+  final String? contentUrl;
+  final Map<String, dynamic>? metadata;
+
+  ModuleContent({
+    required this.id,
+    required this.language,
+    required this.title,
+    required this.description,
+    this.contentUrl,
+    this.metadata,
+  });
+
+  factory ModuleContent.fromJson(Map<String, dynamic> json) {
+    return ModuleContent(
+      id: json['id'],
+      language: json['language'] ?? 'en',
+      title: json['title'],
+      description: json['description'] ?? '',
+      contentUrl: json['content_url'],
+      metadata: json['metadata'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'language': language,
+      'title': title,
+      'description': description,
+      'content_url': contentUrl,
+      'metadata': metadata,
+    };
+  }
+}
+
+class VideoProgress {
+  final String userId;
+  final String moduleId;
+  final double watchedDuration;
+  final double totalDuration;
+  final bool isCompleted;
+  final DateTime lastWatched;
+
+  VideoProgress({
+    required this.userId,
+    required this.moduleId,
+    required this.watchedDuration,
+    required this.totalDuration,
+    this.isCompleted = false,
+    required this.lastWatched,
+  });
+
+  factory VideoProgress.fromJson(Map<String, dynamic> json) {
+    return VideoProgress(
+      userId: json['user_id'],
+      moduleId: json['module_id'],
+      watchedDuration: (json['watched_duration'] as num).toDouble(),
+      totalDuration: (json['total_duration'] as num).toDouble(),
+      isCompleted: json['is_completed'] ?? false,
+      lastWatched: DateTime.parse(json['last_watched']),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'user_id': userId,
+      'module_id': moduleId,
+      'watched_duration': watchedDuration,
+      'total_duration': totalDuration,
+      'is_completed': isCompleted,
+      'last_watched': lastWatched.toIso8601String(),
+    };
+  }
+
+  double get progressPercentage {
+    if (totalDuration <= 0) return 0.0;
+    return (watchedDuration / totalDuration).clamp(0.0, 1.0);
+  }
+}
+
 class CourseModule {
   final String id;
   final String courseId;
@@ -174,7 +260,7 @@ class CourseModule {
     // First check multi-language content
     if (multiLanguageContent != null) {
       for (final content in multiLanguageContent!) {
-        if (content.languageCode == languageCode && content.contentUrl != null) {
+        if (content.language == languageCode && content.contentUrl != null) {
           return content.contentUrl;
         }
       }
@@ -203,7 +289,7 @@ class CourseModule {
     // Add from multi-language content
     if (multiLanguageContent != null) {
       for (final content in multiLanguageContent!) {
-        languages.add(content.languageCode);
+        languages.add(content.language);
       }
     }
     

@@ -7,6 +7,9 @@ import 'video_service.dart';
 
 class CourseService {
   final VideoService _videoService = VideoService();
+  
+  // Add offline mode support
+  bool get isOfflineMode => false; // Set to false for now, can be configured later
   // Fetch all courses filtered by category from Supabase or use mock data
   Future<List<Course>> getFilteredCourses(String category) async {
     try {

@@ -362,7 +362,7 @@ class SecurityUtils {
     final patterns = [
       r'(\bUNION\b|\bSELECT\b|\bINSERT\b|\bUPDATE\b|\bDELETE\b|\bDROP\b)',
       r'(\bOR\b\s+\d+\s*=\s*\d+|\bAND\b\s+\d+\s*=\s*\d+)',
-      r"(\'|\\\\\";|\|\||&&)",
+      r"(\'|\\\\|\|\||&&)",
       r'(\bxp_|\bsp_|\bfn_)',
     ];
     

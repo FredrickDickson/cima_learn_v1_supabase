@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'video_event.dart';
+import 'package:flutter/material.dart';
 
 /// Video states for the VideoBloc
 sealed class VideoState extends Equatable {
@@ -122,8 +122,8 @@ class VideoPaused extends VideoState {
 }
 
 /// State when video is buffering
-class VideoBuffering extends VideoState {
-  const VideoBuffering({
+class VideoBufferingState extends VideoState {
+  const VideoBufferingState({
     required this.position,
     required this.duration,
     required this.speed,
@@ -146,8 +146,8 @@ class VideoBuffering extends VideoState {
 }
 
 /// State when video playback is completed
-class VideoCompleted extends VideoState {
-  const VideoCompleted({
+class VideoCompletedState extends VideoState {
+  const VideoCompletedState({
     required this.duration,
     required this.isFullscreen,
     required this.quality,
@@ -178,8 +178,8 @@ class VideoProgressSaving extends VideoState {
 }
 
 /// State when video progress is successfully saved
-class VideoProgressSaved extends VideoState {
-  const VideoProgressSaved({
+class VideoProgressSavedState extends VideoState {
+  const VideoProgressSavedState({
     required this.position,
     required this.duration,
     required this.progressPercentage,
