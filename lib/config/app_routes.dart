@@ -24,7 +24,7 @@ class AppRoutes {
       case '/signup':
         return MaterialPageRoute(builder: (_) => const signup.SignupPage());
 
-      case '/enrolled_courses':
+      case '/enrolled-courses':
         return MaterialPageRoute(builder: (_) => const EnrolledCoursesPage());
 
       case '/cart':
