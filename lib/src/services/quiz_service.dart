@@ -13,14 +13,27 @@ class QuizService {
 
   // Get all quizzes for a course
   Future<List<Quiz>> getCourseQuizzes(String courseId) async {
+    if (courseId.isEmpty) {
+      debugPrint('Error: Empty course ID provided');
+      return [];
+    }
+
     try {
       final response = await _supabase
           .from('quizzes')
           .select()
           .eq('course_id', courseId)
-          .order('created_at');
+          .order('created_at')
+          .timeout(const Duration(seconds: 15));
 
-      return response.map((quiz) => Quiz.fromJson(quiz)).toList();
+      return response.map((quiz) {
+        try {
+          return Quiz.fromJson(quiz);
+        } catch (e) {
+          debugPrint('Error parsing quiz JSON: $e');
+          return null;
+        }
+      }).where((quiz) => quiz != null).cast<Quiz>().toList();
     } catch (e) {
       debugPrint('Error fetching course quizzes: $e');
       return [];
