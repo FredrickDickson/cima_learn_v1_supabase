@@ -7,6 +7,7 @@ class UserProfile {
   final String? organization;
   final String? phoneNumber;
   final String? country;
+  final String role; // student, instructor, admin
   final List<String> learningPreferences;
   final String? bio;
   final DateTime createdAt;
@@ -21,6 +22,7 @@ class UserProfile {
     this.organization,
     this.phoneNumber,
     this.country,
+    this.role = 'student',
     this.learningPreferences = const [],
     this.bio,
     required this.createdAt,
@@ -37,6 +39,7 @@ class UserProfile {
       organization: json['organization'],
       phoneNumber: json['phone_number'],
       country: json['country'],
+      role: json['role'] ?? 'student',
       learningPreferences: json['learning_preferences'] != null 
           ? List<String>.from(json['learning_preferences']) 
           : [],

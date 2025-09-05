@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import 'src/app.dart';
 import 'src/providers/theme_provider.dart';
-import 'src/services/enhanced_auth_service.dart';
+import 'src/blocs/auth/auth_bloc.dart';
+import 'src/blocs/course/course_bloc.dart';
+import 'src/blocs/video/video_bloc.dart';
 import 'src/services/cart_service.dart';
 import 'src/services/instructor_service.dart';
 
@@ -22,10 +25,17 @@ Future<void> main() async {
   print('CIMA Learn ready to launch!');
 
   runApp(
-    MultiProvider(
+    MultiBlocProvider(
       providers: [
+        // Theme provider (keeping as Provider for now)
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
-        ChangeNotifierProvider(create: (_) => EnhancedAuthService()),
+        
+        // BLoC providers for main app state
+        BlocProvider(create: (_) => AuthBloc()),
+        BlocProvider(create: (_) => CourseBloc()),
+        BlocProvider(create: (_) => VideoBloc()),
+        
+        // Legacy providers (will migrate these later)
         ChangeNotifierProvider(create: (_) => CartService()),
         ChangeNotifierProvider(create: (_) => InstructorService()),
       ],
